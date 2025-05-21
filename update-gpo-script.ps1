@@ -8,6 +8,7 @@
     Currently testing and working
 
     Limitations - code only allows for a single (Computer policy - no user policy is defined)
+                - no error checking code and the Reset-GPO function needs a bit of adjustment
 
 #>
 
