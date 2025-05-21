@@ -13,6 +13,8 @@
 #>
 
 function Get-LGPO {
+
+    # Variables - change the location of the files if using your own
     $destinationPath = "C:\Program Files\Sysinternals"
     $urltool = "https://raw.githubusercontent.com/Braedach/GPO/main/LGPO.exe"
     $urlgpo = "https://raw.githubusercontent.com/Braedach/GPO/main/registry.pol"
