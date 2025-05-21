@@ -1,40 +1,61 @@
 <#
-    Updated 2025-05-20
+    Updated 2025-05-22
 
     Purpose:
     
     Allow for the updating of the LGPO via Live response
-    Script must be run as Administrator for testing
-    Currently testing and working
+    Script must be run as Administrator for testing if run locally
+    Retested the script found multiple errors - have corrected
+    Updated error checking - modified commands
 
     Limitations - code only allows for a single (Computer policy - no user policy is defined)
-                - no error checking code and the Reset-GPO function needs a bit of adjustment
 
 #>
 
 function Get-LGPO {
 
-    # Variables - change the location of the files if using your own
+    # Variables
     $destinationPath = "C:\Program Files\Sysinternals"
     $urltool = "https://raw.githubusercontent.com/Braedach/GPO/main/LGPO.exe"
     $urlgpo = "https://raw.githubusercontent.com/Braedach/GPO/main/registry.pol"
+
 
     # Create the destination folder if it doesn't exist
     if (!(Test-Path $destinationPath)) {
         New-Item -ItemType Directory -Path $destinationPath -Force
     }
 
-    # Download the appropriate files - no need to check as they will be overwritten
-    Invoke-WebRequest -Uri $urltool -OutFile "$destinationPath\LGPO.exe"
-    Invoke-WebRequest -Uri $urlgpo -OutFile "$destinationPath\registry.pol"
+    try {
+    # Download the appropriate files - handle network failures
+    Invoke-WebRequest -Uri $urltool -OutFile "$destinationPath\LGPO.exe" -ErrorAction Stop
+    Write-Host "Successfully downloaded LGPO.exe" -ForegroundColor Green
+    } catch {
+    Write-Host "Failed to download LGPO.exe. Error: $($_.Exception.Message)" -ForegroundColor Red
+    exit 1  # Exit script with error code 1
+    }
+
+try {
+    Invoke-WebRequest -Uri $urlgpo -OutFile "$destinationPath\registry.pol" -ErrorAction Stop
+    Write-Host "Successfully downloaded registry.pol" -ForegroundColor Green
+    } catch {
+    Write-Host "Failed to download registry.pol. Error: $($_.Exception.Message)" -ForegroundColor Red
+    exit 2  # Exit script with error code 2
+    }
+
 
     Write-Output "Files successfully downloaded to $destinationPath"
 
     # Change directory to destination path for execution
     Set-Location $destinationPath
 
-    # Run the LGPO command and capture output/errors
-    .\LGPO.exe /g /v *> "$destinationPath\lgpo.out" 2> "$destinationPath\lgpo.err"
+   try {
+    # Run LGPO command and check success
+    .\LGPO.exe /m $destinationPath\registry.pol
+    } catch {
+    Write-Host "Implementation of registry.pol failed - Error: $($_.Exception.Message)" -ForegroundColor Red
+    exit 3  # Exit script with error code 2
+    }
+
 
     # Force a Group Policy update
     gpupdate /force
@@ -55,7 +76,7 @@ function Reset-GPO {
         return
     }
 
-    # Function to check for the presence of GroupPolicy folders
+        # Function to check for the presence of GroupPolicy folders
     function Get-GPOFolders {
         $foundFolders = @()
         foreach ($folder in @("GroupPolicy", "GroupPolicyUsers")) {
@@ -89,7 +110,8 @@ function Reset-GPO {
     Invoke-Command { gpupdate /force }
 }
 
-# Uncomment the below line to purge the LGPO
+
+# Uncomment the below line to purge the LGPO before you run the update
 # Reset-GPO
 
 # Update the Local GPO
