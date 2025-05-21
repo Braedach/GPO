@@ -44,7 +44,6 @@ function Get-LGPO {
 
 function Reset-GPO {
     param (
-        # Default search starts at the root of C drive, modify as needed
         [string]$RootPath = "C:\Windows\System32\"
     )
 
@@ -54,18 +53,38 @@ function Reset-GPO {
         return
     }
 
-    # Search and remove folders
-    Get-ChildItem -Path $RootPath -Recurse -Directory |
-    Where-Object { $_.Name -eq "GroupPolicy" -or $_.Name -eq "GroupPolicyUsers" } |
-    ForEach-Object {
+    # Function to check for the presence of GroupPolicy folders
+    function Get-GPOFolders {
+        $foundFolders = @()
+        foreach ($folder in @("GroupPolicy", "GroupPolicyUsers")) {
+            $path = Join-Path -Path $RootPath -ChildPath $folder
+            if (Test-Path -Path $path -ErrorAction SilentlyContinue) {
+                $foundFolders += $path
+            }
+        }
+        return $foundFolders
+    }
+
+    $folders = Get-GPOFolders
+
+    # Exit if neither folder is found
+    if ($folders.Count -eq 0) {
+        Write-Host "No Group Policy folders found. Exiting..." -ForegroundColor Yellow
+        return
+    }
+
+    # Remove found folders
+    foreach ($folder in $folders) {
         try {
-            Remove-Item -Path $_.FullName -Recurse -Force
-            Write-Host "Deleted folder: $($_.FullName)" -ForegroundColor Green
-            Invoke-Command {gpupdate /force}
+            Remove-Item -Path $folder -Recurse -Force
+            Write-Host "Deleted folder: $folder" -ForegroundColor Green
         } catch {
-            Write-Host "Failed to delete folder: $($_.FullName). Error: $($_.Exception.Message)" -ForegroundColor Yellow
+            Write-Host "Failed to delete folder: $folder. Error: $($_.Exception.Message)" -ForegroundColor Yellow
         }
     }
+
+    # Force Group Policy update
+    Invoke-Command { gpupdate /force }
 }
 
 # Uncomment the below line to purge the LGPO
