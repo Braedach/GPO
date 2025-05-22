@@ -50,7 +50,7 @@ try {
 
    try {
     # Run LGPO command and check success
-    .\LGPO.exe /m $destinationPath\registry.pol /v > $destinationPath\lgpo-verbose.out 2> $destinationPath\lgpo-error.err
+    .\LGPO.exe /m $destinationPath\registry.pol /v > $destinationPath\lgpo-verbose.txt 2> $destinationPath\lgpo-error.txt
 
     # Force a Group Policy update
     gpupdate /force    
@@ -111,8 +111,14 @@ function Reset-GPO {
 }
 
 
-# Uncomment the below line to purge the LGPO before you run the update
+Function Restart-Windows {
+    # Force restart of Windows
+    Restart-Computer -Force
+}
+
+# Uncomment the below line to purge the LGPO and restart Windows
 # Reset-GPO
+# Restart-Windows
 
 # Update the Local GPO
 Get-LGPO
