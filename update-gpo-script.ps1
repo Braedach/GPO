@@ -8,7 +8,7 @@
     Retested the script found multiple errors - have corrected
     Updated error checking - modified commands
 
-    Limitations - code only allows for a single (Computer policy - no user policy is defined)
+    Limitations - code only allows for a single (Computer policy - no user policy is defined) and as such the command reflects
 
 #>
 
@@ -50,17 +50,17 @@ try {
 
    try {
     # Run LGPO command and check success
-    .\LGPO.exe /m $destinationPath\registry.pol
+    .\LGPO.exe /m $destinationPath\registry.pol /v > $destinationPath\lgpo-verbose.out 2> $destinationPath\lgpo-error.err
+
+    # Force a Group Policy update
+    gpupdate /force    
+    Write-Output "LGPO settings applied. Group Policy update completed." -ForegroundColor Green
+    
     } catch {
     Write-Host "Implementation of registry.pol failed - Error: $($_.Exception.Message)" -ForegroundColor Red
     exit 3  # Exit script with error code 2
     }
 
-
-    # Force a Group Policy update
-    gpupdate /force
-
-    Write-Output "LGPO settings applied. Group Policy update completed."
 }
 
 
