@@ -25,7 +25,22 @@ Fixed
 3.  All policies have been updated and reflected in Microsoft Security Portal
 
 
+Disclaimer
+
+1.  I am not responsible if you implement my script on your machine
+2.  I am not responsible if you get hacked after implementing my script on your machine
+3.  Basically, I am not responsible
+4.  To the best of my knowledge there is no downside to using this GPO and there is definitely no malicious intent.
+
+
 Outstanding
 
 1.  May have to look at the registry and see what needs to be adjusted based on the old implementation method
+
+
+Links
+
+1. https://www.braedach.com/microsoft-group-policy/
+2. https://learn.microsoft.com/en-us/windows/security/operating-system-security/device-management/windows-security-configuration-framework/windows-security-baselines
+
 
