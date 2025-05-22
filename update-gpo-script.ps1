@@ -10,6 +10,10 @@
 
     Limitations - code only allows for a single (Computer policy - no user policy is defined) and as such the command reflects
 
+    Error codes:
+    1.  The executable LGPO.exe did not download
+    2.  The registry.pol file did not download
+    3.  Something went seriously wrong on applying the GPO refer to the error verbose outputs - should not happen
 #>
 
 function Get-LGPO {
@@ -34,7 +38,8 @@ function Get-LGPO {
     exit 1  # Exit script with error code 1
     }
 
-try {
+    try {
+    # Download the appropriate files - handle network failures
     Invoke-WebRequest -Uri $urlgpo -OutFile "$destinationPath\registry.pol" -ErrorAction Stop
     Write-Host "Successfully downloaded registry.pol" -ForegroundColor Green
     } catch {
@@ -48,7 +53,7 @@ try {
     # Change directory to destination path for execution
     Set-Location $destinationPath
 
-   try {
+    try {
     # Run LGPO command and check success
     .\LGPO.exe /m $destinationPath\registry.pol /v > $destinationPath\lgpo-verbose.txt 2> $destinationPath\lgpo-error.txt
 
@@ -58,7 +63,7 @@ try {
     
     } catch {
     Write-Host "Implementation of registry.pol failed - Error: $($_.Exception.Message)" -ForegroundColor Red
-    exit 3  # Exit script with error code 2
+    exit 3  # Exit script with error code 3
     }
 
 }
@@ -111,7 +116,7 @@ function Reset-GPO {
 }
 
 
-Function Restart-Windows {
+function Restart-Windows {
     # Force restart of Windows
     Restart-Computer -Force
 }
