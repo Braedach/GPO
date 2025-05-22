@@ -18,3 +18,14 @@ Shortcomings
 3.  File is in the public domain but okay with this for the time being
 
 
+Fixed
+
+1.  Fixed all the coding errors - my bad
+2.  Tested on a purged system via local execution and Live response
+3.  All policies have been updated and reflected in Microsoft Security Portal
+
+
+Outstanding
+
+1.  May have to look at the registry and see what needs to be adjusted based on the old implementation method
+
