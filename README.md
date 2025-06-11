@@ -16,6 +16,7 @@ Shortcomings
 1.  A single registry.pol file is used which applies to the computer not the user
 2.  I see no reason to change this
 3.  File is in the public domain but okay with this for the time being
+4.  secedit SECURITYPOLICY needs fixing ASAP
 
 
 Fixed
