@@ -1,52 +1,57 @@
 <#
-    Updated 2025-05-22
+    Updated 2025-06-11
 
     Purpose:
     
     Allow for the updating of the LGPO via Live response
-    Script must be run as Administrator for testing if run locally
+    Script must be run as Administrator for testing if run locally - changes may be required in PowerShell permissions
     Retested the script found multiple errors - have corrected
     Updated error checking - modified commands
 
-    Limitations - code only allows for a single (Computer policy - no user policy is defined) and as such the command reflects
+    Code is set to update the LGPO
 
-    Error codes:
-    1.  The executable LGPO.exe did not download
-    2.  The registry.pol file did not download
-    3.  Something went seriously wrong on applying the GPO refer to the error verbose outputs - should not happen
 #>
 
 function Get-LGPO {
-
     # Variables
-    $destinationPath = "C:\Program Files\Sysinternals"
+    $destinationPath = "C:\Program Files\GPO"
+    $oldPath = "C:\Program Files\Sysinternals"
     $urltool = "https://raw.githubusercontent.com/Braedach/GPO/main/LGPO.exe"
     $urlgpo = "https://raw.githubusercontent.com/Braedach/GPO/main/registry.pol"
 
+    # Cleanup - remove old files if they exist
+    if (Test-Path "$oldPath\LGPO.exe") {
+        Remove-Item "$oldPath\LGPO.exe" -Force
+        Write-Host "Removed old LGPO.exe from $oldPath" -ForegroundColor Yellow
+    }
+    
+    if (Test-Path "$oldPath\registry.pol") {
+        Remove-Item "$oldPath\registry.pol" -Force
+        Write-Host "Removed old registry.pol from $oldPath" -ForegroundColor Yellow
+    }
 
-    # Create the destination folder if it doesn't exist
+    # Create new destination folder if it doesn't exist
     if (!(Test-Path $destinationPath)) {
         New-Item -ItemType Directory -Path $destinationPath -Force
     }
 
     try {
-    # Download the appropriate files - handle network failures
-    Invoke-WebRequest -Uri $urltool -OutFile "$destinationPath\LGPO.exe" -ErrorAction Stop
-    Write-Host "Successfully downloaded LGPO.exe" -ForegroundColor Green
+        # Download LGPO tool
+        Invoke-WebRequest -Uri $urltool -OutFile "$destinationPath\LGPO.exe" -ErrorAction Stop
+        Write-Host "Successfully downloaded LGPO.exe" -ForegroundColor Green
     } catch {
-    Write-Host "Failed to download LGPO.exe. Error: $($_.Exception.Message)" -ForegroundColor Red
-    exit 1  # Exit script with error code 1
+        Write-Host "Failed to download LGPO.exe. Error: $($_.Exception.Message)" -ForegroundColor Red
+        exit 1
     }
 
     try {
-    # Download the appropriate files - handle network failures
-    Invoke-WebRequest -Uri $urlgpo -OutFile "$destinationPath\registry.pol" -ErrorAction Stop
-    Write-Host "Successfully downloaded registry.pol" -ForegroundColor Green
+        # Download registry.pol file
+        Invoke-WebRequest -Uri $urlgpo -OutFile "$destinationPath\registry.pol" -ErrorAction Stop
+        Write-Host "Successfully downloaded registry.pol" -ForegroundColor Green
     } catch {
-    Write-Host "Failed to download registry.pol. Error: $($_.Exception.Message)" -ForegroundColor Red
-    exit 2  # Exit script with error code 2
+        Write-Host "Failed to download registry.pol. Error: $($_.Exception.Message)" -ForegroundColor Red
+        exit 2
     }
-
 
     Write-Output "Files successfully downloaded to $destinationPath"
 
@@ -54,76 +59,30 @@ function Get-LGPO {
     Set-Location $destinationPath
 
     try {
-    # Run LGPO command and check success
-    .\LGPO.exe /m $destinationPath\registry.pol /v > $destinationPath\lgpo-verbose.txt 2> $destinationPath\lgpo-error.txt
+        # Apply LGPO settings
+        .\LGPO.exe /m "$destinationPath\registry.pol" /v > "$destinationPath\lgpo-verbose.txt" 2> "$destinationPath\lgpo-error.txt"
 
-    # Force a Group Policy update
-    gpupdate /force    
-    Write-Output "LGPO settings applied. Group Policy update completed." -ForegroundColor Green
-    
+        # Force Group Policy update
+        gpupdate /force
+        Write-Output "LGPO settings applied. Group Policy update completed." -ForegroundColor Green
+
+        # Output Group Policy results
+        gpresult /r > "$destinationPath\gpresult.txt"
+        Write-Host "Saved gpresult output to gpresult.txt" -ForegroundColor Cyan
+
+        # Export security settings
+        secedit /export /cfg "$destinationPath\security.txt"
+        Write-Host "Exported security configuration to security.txt" -ForegroundColor Cyan
+        
     } catch {
-    Write-Host "Implementation of registry.pol failed - Error: $($_.Exception.Message)" -ForegroundColor Red
-    exit 3  # Exit script with error code 3
+        Write-Host "Implementation of registry.pol failed - Error: $($_.Exception.Message)" -ForegroundColor Red
+        exit 3
     }
-
 }
 
+# Update the Local GPO
+Get-LGPO
 
-
-function Reset-GPO {
-    param (
-        [string]$RootPath = "C:\Windows\System32\"
-    )
-
-    # Ensure the provided path exists
-    if (-not (Test-Path -Path $RootPath)) {
-        Write-Host "The specified path does not exist: $RootPath" -ForegroundColor Red
-        return
-    }
-
-        # Function to check for the presence of GroupPolicy folders
-    function Get-GPOFolders {
-        $foundFolders = @()
-        foreach ($folder in @("GroupPolicy", "GroupPolicyUsers")) {
-            $path = Join-Path -Path $RootPath -ChildPath $folder
-            if (Test-Path -Path $path -ErrorAction SilentlyContinue) {
-                $foundFolders += $path
-            }
-        }
-        return $foundFolders
-    }
-
-    $folders = Get-GPOFolders
-
-    # Exit if neither folder is found
-    if ($folders.Count -eq 0) {
-        Write-Host "No Group Policy folders found. Exiting..." -ForegroundColor Yellow
-        return
-    }
-
-    # Remove found folders
-    foreach ($folder in $folders) {
-        try {
-            Remove-Item -Path $folder -Recurse -Force
-            Write-Host "Deleted folder: $folder" -ForegroundColor Green
-        } catch {
-            Write-Host "Failed to delete folder: $folder. Error: $($_.Exception.Message)" -ForegroundColor Yellow
-        }
-    }
-
-    # Force Group Policy update
-    Invoke-Command { gpupdate /force }
-}
-
-
-function Restart-Windows {
-    # Force restart of Windows
-    Restart-Computer -Force
-}
-
-# Uncomment the below line to purge the LGPO and restart Windows
-# Reset-GPO
-# Restart-Windows
 
 # Update the Local GPO
 Get-LGPO
