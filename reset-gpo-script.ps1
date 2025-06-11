@@ -5,8 +5,9 @@
     
     Allow for the resetting of the LGPO via Live response
     Script must be run as Administrator for testing if run locally - changes may be required in PowerShell permissions
-    Retested the script found multiple errors - have corrected
-    Updated error checking - modified commands
+    Major flaw discovered in the secedit policy mainly SECURITYPOLICY - fixing
+    
+    DO NOT RUN THE Reset-Secedit function at this time - its there to see the issue - its not tested fully yet.
 
     Code is set to reset the LGPO
 
@@ -71,7 +72,41 @@ function Reset-GPO {
         }
     }
 
+# Force group policy update
+gpupdate /force
+Write-Host "Group Policy refreshed after security reset." -ForegroundColor Cyan
+
+
 }
+
+function Reset-Secedit {
+    
+    # Define paths
+    $backupFile = "$env:SystemRoot\Security\Database\secedit-backup.sdb"
+    $defaultTemplate = "$env:SystemRoot\inf\defltbase.inf"
+    $securityDB = "$env:SystemRoot\Security\Database\secedit.sdb"
+
+
+    # Backup current security settings (just in case)
+    if (Test-Path $securityDB) {
+        Copy-Item -Path $securityDB -Destination $backupFile -Force
+        Write-Host "Backup of current security settings created at $backupFile" -ForegroundColor Yellow
+    } else {
+        Write-Host "No existing security database found. Proceeding with reset." -ForegroundColor Cyan
+    }
+    
+    # Clear local security policies
+    Write-Host "Purging existing security policies..." -ForegroundColor Red
+    secedit /clearmgmt
+    Write-Host "Security policies cleared." -ForegroundColor Green
+
+    # Restore default security settings
+    Write-Host "Restoring default Windows security posture..." -ForegroundColor Red
+    secedit /configure /db $securityDB /cfg $defaultTemplate /verbose
+    Write-Host "System security reset to default settings." -ForegroundColor Green
+
+}
+
 
 
 function Restart-Windows {
@@ -79,6 +114,7 @@ function Restart-Windows {
     Restart-Computer -Force
 }
 
-# Uncomment the below line to purge the LGPO and restart Windows - you cannot run a reset and an update at the same time.  Obvious really
+# Call the appropriate functions - see note above on the Reset-Secedit function - DONT USE
 Reset-GPO
+# Reset-Secedit
 Restart-Windows
