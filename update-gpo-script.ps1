@@ -83,6 +83,3 @@ function Get-LGPO {
 # Update the Local GPO
 Get-LGPO
 
-
-# Update the Local GPO
-Get-LGPO
