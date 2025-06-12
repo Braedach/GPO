@@ -1,85 +1,110 @@
 <#
-    Updated 2025-06-11
+    Updated 2025-06-12
 
     Purpose:
     
     Allow for the updating of the LGPO via Live response
     Script must be run as Administrator for testing if run locally - changes may be required in PowerShell permissions
-    Retested the script found multiple errors - have corrected
-    Updated error checking - modified commands
+    Modify command to ensure only Machine has group policy applied
+
+    THIS CODE DOES NOT YET INCLUDE THE secedit SECURITYPOLICY update section
+    Testing is in process for the reset of the secedit SECURITYPOLICY
+    This error was found lately and needs and will be addressed
 
     Code is set to update the LGPO
-
+    Code if functionalized for isolation and testing
+    
 #>
 
 function Get-LGPO {
+
     # Variables
     $destinationPath = "C:\Program Files\GPO"
     $oldPath = "C:\Program Files\Sysinternals"
     $urltool = "https://raw.githubusercontent.com/Braedach/GPO/main/LGPO.exe"
     $urlgpo = "https://raw.githubusercontent.com/Braedach/GPO/main/registry.pol"
 
-    # Cleanup - remove old files if they exist
-    if (Test-Path "$oldPath\LGPO.exe") {
-        Remove-Item "$oldPath\LGPO.exe" -Force
-        Write-Host "Removed old LGPO.exe from $oldPath" -ForegroundColor Yellow
-    }
-    
-    if (Test-Path "$oldPath\registry.pol") {
-        Remove-Item "$oldPath\registry.pol" -Force
-        Write-Host "Removed old registry.pol from $oldPath" -ForegroundColor Yellow
+     $files = @{
+    "LGPO.exe" = $urltool
+    "registry.pol" = $urlgpo
     }
 
-    # Create new destination folder if it doesn't exist
-    if (!(Test-Path $destinationPath)) {
+
+    # Ensure the GPO directory exists - purge it - create it if missing
+    if (Test-Path $destinationPath) {
+        # Remove all files (excluding subdirectories)
+        Get-ChildItem -Path $destinationPath -File | Remove-Item -Force
+        Write-Host "All files in $destinationPath have been deleted." -ForegroundColor Green
+    } else {
+        Write-Host "Directory does not exist: $destinationPath" -ForegroundColor Red
         New-Item -ItemType Directory -Path $destinationPath -Force
+        Write-Host "Directory created: $destinationPath" -ForegroundColor Green
     }
 
-    try {
-        # Download LGPO tool
-        Invoke-WebRequest -Uri $urltool -OutFile "$destinationPath\LGPO.exe" -ErrorAction Stop
-        Write-Host "Successfully downloaded LGPO.exe" -ForegroundColor Green
-    } catch {
-        Write-Host "Failed to download LGPO.exe. Error: $($_.Exception.Message)" -ForegroundColor Red
-        exit 1
+    # Purge the old files due to the folder move
+    $oldFiles = @("LGPO.exe", "registry.pol")
+    foreach ($file in $oldFiles) {
+        $path = "$oldPath\$file"
+        if (Test-Path $path) {
+            Remove-Item $path -Force
+            Write-Host "Removed old $file from $oldPath" -ForegroundColor Yellow
+        }
     }
 
+
+    # Download all the files required - exit on failure
     try {
-        # Download registry.pol file
-        Invoke-WebRequest -Uri $urlgpo -OutFile "$destinationPath\registry.pol" -ErrorAction Stop
-        Write-Host "Successfully downloaded registry.pol" -ForegroundColor Green
-    } catch {
-        Write-Host "Failed to download registry.pol. Error: $($_.Exception.Message)" -ForegroundColor Red
-        exit 2
-    }
+        foreach ($file in $files.Keys) {
+            $url = $files[$file]
+            $destination = "$destinationPath\$file"
 
-    Write-Output "Files successfully downloaded to $destinationPath"
+            Invoke-WebRequest -Uri $url -OutFile $destination -ErrorAction Stop
+            Write-Host "Successfully downloaded $file" -ForegroundColor Green
+            }
+        } 
+    catch {
+        Write-Host "Failed to download $file. Error: $($_.Exception.Message)" -ForegroundColor Red
+        Write-Host "Exiting script due to download failure." -ForegroundColor Red
+        exit
+        }
 
-    # Change directory to destination path for execution
-    Set-Location $destinationPath
+    Write-Host "Files successfully downloaded to $destinationPath" -ForegroundColor Green
+
+    
 
     try {
-        # Apply LGPO settings
-        .\LGPO.exe /m "$destinationPath\registry.pol" /v > "$destinationPath\lgpo-verbose.txt" 2> "$destinationPath\lgpo-error.txt"
+        # Change directory to destination path for execution
+        Set-Location $destinationPath
+        # Run LGPO command and check success
+        .\LGPO.exe /m $destinationPath\registry.pol /v > $destinationPath\lgpo-verbose.txt 2> $destinationPath\lgpo-error.txt
 
-        # Force Group Policy update
-        gpupdate /force
-        Write-Output "LGPO settings applied. Group Policy update completed." -ForegroundColor Green
-
-        # Output Group Policy results
-        gpresult /r > "$destinationPath\gpresult.txt"
-        Write-Host "Saved gpresult output to gpresult.txt" -ForegroundColor Cyan
-
-        # Export security settings
-        secedit /export /cfg "$destinationPath\security.txt"
-        Write-Host "Exported security configuration to security.txt" -ForegroundColor Cyan
-        
-    } catch {
+        # Force a Group Policy update
+        gpupdate /force    
+        Write-Host "LGPO settings applied. Group Policy update completed." -ForegroundColor Green
+    
+        }
+    catch {
         Write-Host "Implementation of registry.pol failed - Error: $($_.Exception.Message)" -ForegroundColor Red
-        exit 3
-    }
+        exit
+        }
+
 }
+
+
+function Get-Securitypolicy {
+    # New function to fix the security policy that was found lacking
+    # Insert code here once written
+    
+}
+
+function Restart-Windows {
+    # Force restart of Windows
+    Restart-Computer -Force
+}
+
+
 
 # Update the Local GPO
 Get-LGPO
-
+# Get-Securitypolicy
+Restart-Windows
