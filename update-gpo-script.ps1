@@ -97,6 +97,11 @@ function Get-LGPO {
         # Force a Group Policy update
         gpupdate /force    
         Write-Host "LGPO settings applied. Group Policy update completed." -ForegroundColor Green
+
+        # Output Group Policy results after application
+        gpresult /H "$destinationPath\report.html"
+        gpresult /r > "$destinationPath\gpresult.txt"
+        Write-Host "Saved GPO Reports to  $destinationPath" -ForegroundColor Green
     
         }
     catch {
