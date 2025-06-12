@@ -67,15 +67,15 @@ function Reset-GPO {
     try {
         # Force group policy update
         gpupdate /force
-        Write-Host "Group Policy being refreshed wheter existing or not..." -ForegroundColor Cyan
+        Write-Host "Group Policy being refreshed whether it exists or not..." -ForegroundColor Cyan
 
         # Output Group Policy results after reset
         gpresult /r > "$destinationPath\gpresult.txt"
         Write-Host "Saved gpresult output to gpresult.txt in $destinationPath" -ForegroundColor Cyan
 
         # Export security settings after reset
-        secedit /export /cfg "$destinationPath\security.txt"
-        Write-Host "Exported security configuration to security.txt in $destinationPath" -ForegroundColor Cyan
+        secedit /export /cfg "$destinationPath\security-policy.txt"
+        Write-Host "Exported security configuration to security-policy.txt in $destinationPath" -ForegroundColor Cyan
         
     } 
     catch {
@@ -101,14 +101,18 @@ function Reset-Secedit {
         Write-Host "Backup of current security settings created at $backupFile" -ForegroundColor Yellow
     } else {
         Write-Host "No existing security database found. Proceeding with reset." -ForegroundColor Cyan
+        # LOGIC ERROR -IF THERE IS NO DATABASE HOW CAN YOU RESET IT - MOVE THE CODE BLOCK
+        # 
     }
     
     # Clear local security policies
+    # THIS CODE SHOULD BE ADDED IN THE ABOVE ELSE BLOCK
     Write-Host "Purging existing security policies..." -ForegroundColor Red
     secedit /clearmgmt
     Write-Host "Security policies cleared." -ForegroundColor Green
 
     # Restore default security settings
+    # LOGIC ERROR YOU NEED TO CHECK FOR EXISTANCE OF THE DEFAULT TEMPLATE FIRST
     Write-Host "Restoring default Windows security posture..." -ForegroundColor Red
     secedit /configure /db $securityDB /cfg $defaultTemplate /verbose
     Write-Host "System security reset to default settings." -ForegroundColor Green
@@ -125,4 +129,4 @@ function Restart-Windows {
 # Call the appropriate functions - see note above on the Reset-Secedit function - DONT USE
 Reset-GPO
 # Reset-Secedit
-Restart-Windows
+# Restart-Windows
