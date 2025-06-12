@@ -16,6 +16,21 @@
     
 #>
 
+
+function Get-WindowsEdition {
+    $edition = (Get-WmiObject -Class Win32_OperatingSystem).OperatingSystemSKU
+    # List of SKU numbers for Windows Home Editions
+    $homeEditions = @(1, 2, 3, 4, 5, 98, 99)
+
+    if ($homeEditions -contains $edition) {
+        Write-Host "Unsupported Windows edition detected: Home Edition. Exiting script..." -ForegroundColor Red
+        exit
+    } else {
+        Write-Host "Windows edition is valid for this operation." -ForegroundColor Green
+    }
+}
+
+
 function Get-LGPO {
 
     # Variables
@@ -35,11 +50,12 @@ function Get-LGPO {
         # Remove all files (excluding subdirectories)
         Get-ChildItem -Path $destinationPath -File | Remove-Item -Force
         Write-Host "All files in $destinationPath have been deleted." -ForegroundColor Green
-    } else {
+        }
+    else {
         Write-Host "Directory does not exist: $destinationPath" -ForegroundColor Red
         New-Item -ItemType Directory -Path $destinationPath -Force
         Write-Host "Directory created: $destinationPath" -ForegroundColor Green
-    }
+        }
 
     # Purge the old files due to the folder move
     $oldFiles = @("LGPO.exe", "registry.pol")
@@ -104,7 +120,9 @@ function Restart-Windows {
 
 
 
-# Update the Local GPO
+# Call the appropriate functions - these need to be called in order
+# Do NOT call the Get-Secedit function - its in testing and has issues
+Get-WindowsEdition
 Get-LGPO
 # Get-Securitypolicy
 Restart-Windows
