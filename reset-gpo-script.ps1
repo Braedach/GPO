@@ -1,5 +1,5 @@
 <#
-    Updated 2025-06-11
+    Updated 2025-06-12
 
     Purpose:
     
@@ -15,13 +15,19 @@
 
 function Reset-GPO {
     param (
-        [string]$RootPath = "C:\Windows\System32\"
+        [string]$RootPath = "C:\Windows\System32\",
+        [string]$destinationPath = "C:\Program Files\GPO"
     )
 
-    # Ensure the provided path exists
-    if (-not (Test-Path -Path $RootPath)) {
-        Write-Host "The specified path does not exist: $RootPath" -ForegroundColor Red
-        return
+    # Ensure the GPO directory exists - purge it - create it if missing
+    if (Test-Path $destinationPath) {
+        # Remove all files (excluding subdirectories)
+        Get-ChildItem -Path $destinationPath -File | Remove-Item -Force
+        Write-Host "All files in $destinationPath have been deleted." -ForegroundColor Green
+    } else {
+        Write-Host "Directory does not exist: $destinationPath" -ForegroundColor Red
+        New-Item -ItemType Directory -Path $destinationPath -Force
+        Write-Host "Directory created: $destinationPath" -ForegroundColor Green
     }
 
     # Function to check for the presence of GroupPolicy folders
@@ -40,41 +46,43 @@ function Reset-GPO {
 
     # Exit if neither folder is found
     if ($folders.Count -eq 0) {
-        Write-Host "No Group Policy folders found. Exiting..." -ForegroundColor Yellow
+        Write-Host "No Group Policy folders found. Checking Security Policy..." -ForegroundColor Yellow
         return
     }
-
-    # Remove found folders
-    foreach ($folder in $folders) {
-        try {
-            Remove-Item -Path $folder -Recurse -Force
-            Write-Host "Deleted folder: $folder" -ForegroundColor Green
-
+    else {
+         # Remove found folders
+        foreach ($folder in $folders) {
             try {
-                # Force Group Policy update after reset
-                gpupdate /force
-                Write-Output "LGPO settings applied. Group Policy update completed." -ForegroundColor Green
-
-                # Output Group Policy results after reset
-                gpresult /r > "$destinationPath\gpresult.txt"
-                Write-Host "Saved gpresult output to gpresult.txt" -ForegroundColor Cyan
-
-                # Export security settings after reset
-                secedit /export /cfg "$destinationPath\security.txt"
-                Write-Host "Exported security configuration to security.txt" -ForegroundColor Cyan
-        
-            } catch {
-                Write-Host "Implementation of registry.pol failed - Error: $($_.Exception.Message)" -ForegroundColor Red
-                exit 3
-            }
-        } catch {
+                Remove-Item -Path $folder -Recurse -Force
+                Write-Host "Deleted folder: $folder" -ForegroundColor Green
+                } 
+            catch {
             Write-Host "Failed to delete folder: $folder. Error: $($_.Exception.Message)" -ForegroundColor Yellow
+            }
         }
     }
 
-# Force group policy update
-gpupdate /force
-Write-Host "Group Policy refreshed after security reset." -ForegroundColor Cyan
+   
+
+    try {
+        # Force group policy update
+        gpupdate /force
+        Write-Host "Group Policy being refreshed wheter existing or not..." -ForegroundColor Cyan
+
+        # Output Group Policy results after reset
+        gpresult /r > "$destinationPath\gpresult.txt"
+        Write-Host "Saved gpresult output to gpresult.txt in $destinationPath" -ForegroundColor Cyan
+
+        # Export security settings after reset
+        secedit /export /cfg "$destinationPath\security.txt"
+        Write-Host "Exported security configuration to security.txt in $destinationPath" -ForegroundColor Cyan
+        
+    } 
+    catch {
+        Write-Host "Reset of group policy failed - Error: $($_.Exception.Message)" -ForegroundColor Red
+        exit 3
+    }
+
 
 
 }
