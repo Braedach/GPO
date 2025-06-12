@@ -11,12 +11,26 @@
     DO NOT RUN THE Reset-Secedit function at this time - its there to see the issue - its not tested fully yet.
 
     Code is set to reset the LGPO and Security Policy
+    Code if functionalized for isolation and testing
 
 #>
 
+function Get-WindowsEdition {
+    $edition = (Get-WmiObject -Class Win32_OperatingSystem).OperatingSystemSKU
+    # List of SKU numbers for Windows Home Editions
+    $homeEditions = @(1, 2, 3, 4, 5, 98, 99)
+
+    if ($homeEditions -contains $edition) {
+        Write-Host "Unsupported Windows edition detected: Home Edition. Exiting script..." -ForegroundColor Red
+        exit
+    } else {
+        Write-Host "Windows edition is valid for this operation." -ForegroundColor Green
+    }
+}
+
 function Reset-GPO {
     param (
-        [string]$RootPath = "C:\Windows\System32\",
+        [string]$RootPath = "$env:SystemRoot\System32\",
         [string]$destinationPath = "C:\Program Files\GPO"
     )
 
@@ -59,9 +73,10 @@ function Reset-GPO {
                 Write-Host "Deleted folder: $folder" -ForegroundColor Green
                 } 
             catch {
-            Write-Host "Failed to delete folder: $folder. Error: $($_.Exception.Message)" -ForegroundColor Yellow
-            Write-Host "Code has failed - find the error - exiting..."
-            exit
+                <#Do this if a terminating exception happens#>
+                Write-Host "Failed to delete folder: $folder. Error: $($_.Exception.Message)" -ForegroundColor Yellow
+                Write-Host "Code has failed - find the error - exiting..." -ForegroundColor Red
+                exit
             }
         }
     }
@@ -69,36 +84,37 @@ function Reset-GPO {
    
 
     try {
+        # Group policy folders have been removed so should be cleared
         # Force group policy update
         gpupdate /force
-        Write-Host "Group Policy being refreshed whether it exists or not..." -ForegroundColor Cyan
+        Write-Host "Group Policy being refreshed..." -ForegroundColor Cyan
 
         # Output Group Policy results after reset
+        gpresult /H "$destinationPath\report.html"
         gpresult /r > "$destinationPath\gpresult.txt"
-        Write-Host "Saved gpresult output to gpresult.txt in $destinationPath" -ForegroundColor Cyan
+        Write-Host "Saved GPO Reports to  $destinationPath" -ForegroundColor Green
 
-        # Export security settings after reset
-        secedit /export /cfg "$destinationPath\security-policy.txt"
-        Write-Host "Exported security configuration to security-policy.txt in $destinationPath" -ForegroundColor Cyan
-        
     } 
     catch {
+        <#Do this if a terminating exception happens#>
         Write-Host "Reset of group policy failed - Error: $($_.Exception.Message)" -ForegroundColor Red
         Write-Host "Group policy reset of endpoint has failed.  Check code..." - -ForegroundColor Red
         exit
     }
 
-
-
 }
 
 function Reset-Secedit {
+    param (
+        [string]$RootPath = "$env:SystemRoot\System32\",
+        [string]$destinationPath = "C:\Program Files\GPO"
+    )
     
     # Define paths
     $backupFile = "$env:SystemRoot\Security\Database\secedit-backup.sdb"
     $defaultTemplate = "$env:SystemRoot\inf\defltbase.inf"
-    $securityDB = "$env:SystemRoot\Security\Database\secedit.sdb"
-
+    $securityDB = "$env:SystemRoot\security\database\secedit.sdb"
+    $seceditlog = "$destinationPath\database-reset.log"
 
     # Backup current security settings (just in case)
     if (Test-Path $securityDB) {
@@ -113,10 +129,16 @@ function Reset-Secedit {
             Write-Host "Default security template found..." -ForegroundColor Green
 
             try {
-                secedit /configure /db $securityDB /cfg $defaultTemplate /verbose
+                # Be really careful not to stuff with areas you dont want to go
+                # It might be easier to delete the database and force a restart but this has issues with standard user accounts
+                # The restart would be the last line to be executed on this approach
+                secedit /import /db %windir%\security\database\secedit.sdb /cfg %windir%\inf\defltbase.inf
+                secedit /configure /db %windir%\security\database\secedit.sdb /verbose
+
                 Write-Host "System security reset to default settings." -ForegroundColor Green
                 } 
             catch {
+                <#Do this if a terminating exception happens#>
                 Write-Host "Error: Failed to apply default security template - $($_.Exception.Message)" -ForegroundColor Red
                 exit
                 }
@@ -126,6 +148,11 @@ function Reset-Secedit {
             Write-Host "Purging existing security policies..." -ForegroundColor Yellow
             secedit /clearmgmt
             Write-Host "Security policies cleared." -ForegroundColor Green
+
+            # Export security settings after reset
+            secedit /export /cfg "$destinationPath\security-policy.txt"
+            Write-Host "Exported security configuration to security-policy.txt in $destinationPath" -ForegroundColor Cyan
+        
             }
         catch {
             <#Do this if a terminating exception happens#>
@@ -147,7 +174,9 @@ function Restart-Windows {
     Restart-Computer -Force
 }
 
-# Call the appropriate functions - see note above on the Reset-Secedit function - DONT USE
+# Call the appropriate functions - these need to be called in order
+# Do NOT call the Reset-Secedit function - its in testing and has issues
+Get-WindowsEdition
 Reset-GPO
 # Reset-Secedit
 Restart-Windows
