@@ -8,7 +8,7 @@ Assumptions:
 1.  Computer is on and available in Live Response
 2.  Files can be downloaded from this Github
 3.  Files will automatically overwrite but registry.pol needs to be updated on changes
-4.  The Sysinternals directory should be in existance on the endpoint but created it if it is not
+4.  The Sysinternals directory should be in existence on the endpoint but created it if it is not
 5.  Another script is responsible for updating the SysInternals system to enhance MDE
 
 Shortcomings
