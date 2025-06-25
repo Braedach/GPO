@@ -1,7 +1,7 @@
 # GPO via Microsoft Live reponse in MDE
 
 Purpose is to allow for the Local GPO to be updated via Live Response
-This is a manual affair for each computer but does not require physical assess
+This is a manual affair for each computer but does not require physical access.
 
 Assumptions:
 
