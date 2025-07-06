@@ -1,5 +1,5 @@
 <#
-    Updated 2025-07-06
+    Updated 2025-07-07
 
     Purpose:
     Allow for the updating of the LGPO via Live Response.
@@ -32,6 +32,18 @@ function Get-WindowsEdition {
         exit
     } else {
         Write-Host "Windows edition is valid for this operation." -ForegroundColor Green
+    }
+}
+
+function Set-Restore-Point {
+    try {
+        # The following command sets the system restore point creation frequency to 5 minutes - required to reduce interval for testing purposes.
+        Invoke-Command { reg.exe ADD "HKLM\Software\Microsoft\Windows NT\CurrentVersion\SystemRestore" /v SystemRestorePointCreationFrequency /t REG_DWORD /d 5 /f }
+        Write-Host "System restore point interval updated to 5 minutes"
+        Checkpoint-Computer -Description "Pre Group Policy Application" -RestorePointType "MODIFY_SETTINGS"
+        Write-Host "System restore point created successfully."
+    } catch {
+        Write-Host "Failed to create system restore point: $($_.Exception.Message)"
     }
 }
 
@@ -71,10 +83,12 @@ function Export-LGPO {
 
         $lgpoExe = "$basePath\LGPO.exe"
         if (-not (Test-Path $lgpoExe)) {
-        # No error code
+            # Notice that the LGPO.exe is not found
             throw "LGPO.exe not found at $lgpoExe - please ensure it is downloaded and placed in the correct directory."
         }
         else {
+            # Export Local Group Policy using LGPO.exe
+            Write-Host "LGPO.exe found at $lgpoExe" -ForegroundColor Green
             Write-Host "Backing up Local Group Policy using LGPO.exe..." -ForegroundColor Cyan
             & $lgpoExe /b "`"$backupPath`""
             Write-Host "Local Group Policy exported to $backupPath" -ForegroundColor Green
@@ -157,7 +171,7 @@ function Get-LGPO {
 
         Write-Host "Applying security policy from secedit..." -ForegroundColor Cyan
         # According to Microsoft you must validate a policy before you try to apply it so the quiet flag is not a good idea and needs escape code
-        secedit /validate /cfg "$basePath\secpol-policy.inf" /log "$basePath\secedit-validate.log" /quiet
+        secedit /validate /cfg "$basePath\secpol-policy.inf" /log "$basePath\secedit-validate.log" 
         # This line below is wrong - it should validate against the current database
         secedit /configure /db "$basePath\secpol-backup.sdb" /cfg "$basePath\secpol-policy.inf" /areas SECURITYPOLICY /log "$basePath\secedit-configure.log" /quiet
         Write-Host "Security policy applied successfully." -ForegroundColor Green 
@@ -199,10 +213,8 @@ f
     }
     else {
         Get-WindowsEdition
+        Set-Restore-Point
         Export-LGPO
         Get-LGPO
         Restart-Windows
     }
-
-
-
