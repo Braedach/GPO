@@ -6,9 +6,6 @@
     Script must be run as Administrator for local testing — PowerShell permissions may require modification.
     Adjusted to ensure only Machine policies are applied via LGPO.
 
-    NOTE: The secedit SECURITYPOLICY update section is not yet implemented.
-    It's under testing due to recently identified issues.
-
     This script is modularized for ease of testing and isolation.
 #>
 
