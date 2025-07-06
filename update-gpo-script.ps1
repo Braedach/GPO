@@ -43,7 +43,7 @@ function Export-LGPO {
 
     .DESCRIPTION
         Uses secedit and LGPO.exe to extract security and GPO settings.
-        All output is stored in C:\Program Files\GPO\Backup.
+        All output is stored in the target directory
     #>
 
     $basePath = "$env:ProgramData\GPO"
@@ -71,6 +71,7 @@ function Export-LGPO {
 
         $lgpoExe = "$basePath\LGPO.exe"
         if (-not (Test-Path $lgpoExe)) {
+        # No error code
             throw "LGPO.exe not found at $lgpoExe - please ensure it is downloaded and placed in the correct directory."
         }
         else {
