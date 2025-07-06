@@ -192,7 +192,6 @@ f
 # --- Script Execution ---
 
     # Ensure script is run as Administrator
-    # Uncomment the Remove-GPODirectories line if you want to clear the old GPO directories before running the script.
     if (-not ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator")) {
         throw "This script must be run as Administrator."
     }
