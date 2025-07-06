@@ -100,7 +100,6 @@ function Export-LGPO {
 }
 
 
-
 function Get-LGPO {
     <#
     .SYNOPSIS
@@ -180,8 +179,6 @@ function Get-LGPO {
 }
 
 
-
-
 function Restart-Windows {
     <#
     .SYNOPSIS
@@ -196,11 +193,6 @@ function Restart-Windows {
     #>
     Restart-Computer -Force
 }
-
-f
-
-
-
 
 # --- Script Execution ---
 
