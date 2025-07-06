@@ -155,6 +155,7 @@ function Get-LGPO {
         Write-Host "LGPO settings applied successfully." -ForegroundColor Green
 
         Write-Host "Applying security policy from secedit..." -ForegroundColor Cyan
+        # According to Microsoft you must validate a policy before you try to apply it so the quiet flag is not a good idea and needs escape code
         secedit /validate /cfg "$basePath\secpol-policy.inf" /log "$basePath\secedit-validate.log" /quiet
         # This line below is wrong - it should validate against the current database
         secedit /configure /db "$basePath\secpol-backup.sdb" /cfg "$basePath\secpol-policy.inf" /areas SECURITYPOLICY /log "$basePath\secedit-configure.log" /quiet
