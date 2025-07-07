@@ -175,9 +175,8 @@ function Get-LGPO {
             Write-Host "Validation failed. Check the log at $basePath\secedit-validate.log" -ForegroundColor Red
             exit
             }
-        # This line below is wrong - it should validate against the current database
+        Write-Host "Validation successful. Applying security policy..." -ForegroundColor Green
         secedit /configure "$basePath\secpol-policy.inf" /areas SECURITYPOLICY /log "$basePath\secedit-configure.log" /quiet
-        Write-Host "Security policy applied successfully." -ForegroundColor Green 
 
         if ($LASTEXITCODE -ne 0) {
             Write-Host "Validation failed. Check the log at $basePath\secedit-configure.log" -ForegroundColor Red
