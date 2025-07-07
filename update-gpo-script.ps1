@@ -87,7 +87,7 @@ function Export-LGPO {
             # Export Local Group Policy using LGPO.exe
             Write-Host "LGPO.exe found at $lgpoExe" -ForegroundColor Green
             Write-Host "Backing up Local Group Policy using LGPO.exe..." -ForegroundColor Cyan
-            & $lgpoExe /b "`"$backupPath`""
+            & $lgpoExe /b "$backupPath"
             Write-Host "Local Group Policy exported to $backupPath" -ForegroundColor Green
         }
         Write-Host "Export completed successfully. All files are located in $backupPath" -ForegroundColor Green
@@ -166,16 +166,32 @@ function Get-LGPO {
         Write-Host "LGPO settings applied successfully." -ForegroundColor Green
 
         Write-Host "Applying security policy from secedit..." -ForegroundColor Cyan
+
+
         # According to Microsoft you must validate a policy before you try to apply it so the quiet flag is not a good idea and needs escape code
-        secedit /validate /cfg "$basePath\secpol-policy.inf" /log "$basePath\secedit-validate.log" 
+        # Run validation and check for success
+        secedit /validate "$basePath\secpol-policy.inf" >> "$basePath\secedit-validate.log"
+        if ($LASTEXITCODE -ne 0) {
+            Write-Host "Validation failed. Check the log at $basePath\secedit-validate.log" -ForegroundColor Red
+            exit
+            }
         # This line below is wrong - it should validate against the current database
-        secedit /configure /db "$basePath\secpol-backup.sdb" /cfg "$basePath\secpol-policy.inf" /areas SECURITYPOLICY /log "$basePath\secedit-configure.log" /quiet
+        secedit /configure "$basePath\secpol-policy.inf" /areas SECURITYPOLICY /log "$basePath\secedit-configure.log" /quiet
         Write-Host "Security policy applied successfully." -ForegroundColor Green 
+
+        if ($LASTEXITCODE -ne 0) {
+            Write-Host "Validation failed. Check the log at $basePath\secedit-configure.log" -ForegroundColor Red
+            exit
+            }
+
+        Write-Host "Security policy applied successfully." -ForegroundColor Green
+
 
     } catch {
         Write-Host "Failed to apply LGPO and secedit policy settings. Error: $($_.Exception.Message)" -ForegroundColor Red
         exit
-    }
+        
+    }   
 }
 
 
