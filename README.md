@@ -1,52 +1,54 @@
-# GPO via Microsoft Live reponse in MDE
+---
 
-Purpose is to allow for the Local GPO to be updated via Live Response
-This is a manual affair for each computer but does not require physical access.
+## 🛠️ GPO via Microsoft Live Response in MDE
 
-Assumptions:
+### 🎯 Purpose
+Enable updates to the Local Group Policy Object (GPO) via Microsoft Defender for Endpoint (MDE) Live Response. This process is manual per device but does **not** require physical access.
 
-1.  Computer is on and available in Live Response
-2.  Files can be downloaded from this Github
-3.  Files will automatically overwrite but registry.pol needs to be updated on changes
-4.  The Sysinternals directory should be in existence on the endpoint but created it if it is not
-5.  Another script is responsible for updating the SysInternals system to enhance MDE
+---
 
-Shortcomings
+### ✅ Assumptions
+- Target computer is online and accessible via Live Response.
+- Required files are downloadable from the linked GitHub repository.
+- Files will overwrite existing ones automatically; however, `registry.pol` must be updated when changes occur.
+- The GPO directory is now **separated** from Sysinternals.
+- A separate script manages Sysinternals updates to enhance MDE functionality.
 
-1.  A single registry.pol file is used which applies to the computer not the user
-2.  Changed the group policy on the prototype device to ignore user configuration - need to see how this works
-3.  Might need to change this back but at the moment the code in this repository is not affected.
-4.  File is in the public domain but okay with this for the time being
-5.  secedit SECURITYPOLICY needs fixing ASAP - making headway on this.
+---
 
+### ⚠️ Shortcomings
+- A single `registry.pol` file is used, applying **machine-level** policies only (not user-specific).
+- Prototype device has been configured to **ignore user configuration**—this needs further validation.
+- Reverting this change may be necessary, but current repository code remains unaffected.
+- The file is publicly accessible; acceptable for now.
 
-Fixed
+---
 
-1.  Fixed all the coding errors - my bad
-2.  Tested on a purged system via local execution and Live response
-3.  All policies have been updated and reflected in Microsoft Security Portal although it takes time to reflect - 6+ hours
+### 🧹 Fixes Implemented
+- Resolved all coding errors (my oversight).
+- Addressed `secedit` database reset issue; added workaround code.
+- Successfully tested on a **purged system** via both local execution and Live Response.
+- Policies are now reflected in the **Microsoft Security Portal**, though propagation may take **6+ hours**.
 
+---
 
-Disclaimer
+### 📌 Disclaimer
+- I am **not responsible** if you implement this script on your machine.
+- I am **not responsible** if your system is compromised after using this script.
+- In short: **use at your own risk**.
 
-1.  I am not responsible if you implement my script on your machine
-2.  I am not responsible if you get hacked after implementing my script on your machine
-3.  Basically, I am not responsible
-4.  To the best of my knowledge there is no downside to using this GPO and there is definitely no malicious intent.
+---
 
+### 🔄 Outstanding Items
+- GPO configurations are **continually evolving**—expect ongoing updates to the policy file.
 
-Outstanding
+---
 
-1.  Registy is not the problem its secedit
-2.  Create a roll back function - basic coding done - testing not so much
-3.  Create a ASR audit function - created - testing not so much
-4.  Do not publish code till you test it.
+### 🔗 Reference Links
+- [Braedach: Microsoft Group Policy Overview](https://www.braedach.com/microsoft-group-policy/)
+- [Windows Security Baselines](https://learn.microsoft.com/en-us/windows/security/operating-system-security/device-management/windows-security-configuration-framework/windows-security-baselines)
+- [ASR Rule to GUID Matrix](https://learn.microsoft.com/en-us/defender-endpoint/attack-surface-reduction-rules-reference#asr-rule-to-guid-matrix)
 
+---
 
-Links
-
-1. https://www.braedach.com/microsoft-group-policy/
-2. https://learn.microsoft.com/en-us/windows/security/operating-system-security/device-management/windows-security-configuration-framework/windows-security-baselines
-3. https://learn.microsoft.com/en-us/defender-endpoint/attack-surface-reduction-rules-reference#asr-rule-to-guid-matrix
-
-
+Let me know if you'd like this styled for a README, internal wiki, or documentation format. I can also help you version-control the policy evolution or script changes if needed.
