@@ -51,4 +51,4 @@ Enable updates to the Local Group Policy Object (GPO) via Microsoft Defender for
 
 ---
 
-Let me know if you'd like this styled for a README, internal wiki, or documentation format. I can also help you version-control the policy evolution or script changes if needed.
+This respository is controlled by a bio with the help of an AI.  Cheers
