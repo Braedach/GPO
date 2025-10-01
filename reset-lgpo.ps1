@@ -6,7 +6,7 @@ function get-windowsedition {
       Checks the Windows Edition is compliant
       Tested 2025-10-01
 
-  .DESCRIPTION
+    .DESCRIPTION
       Checks the Windows Edition is compliant
       If not the code will exit
     #>
