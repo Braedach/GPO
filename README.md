@@ -5,6 +5,8 @@
 ### 🎯 Purpose
 Enable updates to the Local Group Policy Object (GPO) via Microsoft Defender for Endpoint (MDE) Live Response. This process is manual per device but does **not** require physical access.
 
+DO NOT USE - THIS IS THE DEVELOPMENT BRANCH AND HAS A INCOMPLETE POL FILE
+
 ---
 
 ### ✅ Assumptions
