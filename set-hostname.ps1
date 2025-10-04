@@ -8,7 +8,7 @@ function Set-Hostname {
     .PARAMETER NewHostname
         The new hostname to set for the computer
     .EXAMPLE
-        Local: Set-Hostname -NewHostname "New-PC-Name"
+        Local: Set-Hostname "New-PC-Name"
         Remote: run set-hostname.ps1 "New-PC-Name"
     .NOTES
         Ensure you run this script with administrative privileges.
