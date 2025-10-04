@@ -122,9 +122,6 @@ function Get-LGPO {
         $whoami = whoami
         gpresult /r /user $whoami > "$destinationPath\gpresult.txt"
         gpresult /H /user $whoami > "$destinationPath\report.html"
-        icacls "$destinationPath\*" /grant "Users:(R)" /T
-        icalcs "$destinationPath\*" /grant "Authenticated Users:(R)" /T
-        icalcs "$destinationPath\*" /grant "Everyone:(R)" /T
 
         Write-Host "Saved GPO Reports to $destinationPath" -ForegroundColor Green
     } catch {
@@ -149,3 +146,4 @@ Get-WindowsEdition
 Set-RestorePoint
 Get-LGPO
 Restart-Windows
+
