@@ -59,9 +59,9 @@ function Get-LGPO {
     # YOU NEED TO CHANGE THE RELEASES SO THAT THEY ARE SEPERATE FROM THE DEVELOPMENT BRANCH - THIS CURRENTLY WONT WORK - IT PULLS THE FILES FROM THE SAME LOCATION
     
     $destinationPath = "$env:ProgramData\GPO"
-    $lgpoZipUrl = "https://github.com/Braedach/GPO/releases/download/lgpo/LGPO.zip"
+    $lgpoZipUrl = "https://github.com/Braedach/GPO/releases/download/production/LGPO.zip"
     $lgpoZip = "$destinationPath\LGPO.zip"
-    $urlgpo  = "https://github.com/Braedach/GPO/releases/download/lgpo/registry.pol"
+    $urlgpo  = "https://github.com/Braedach/GPO/releases/download/production/registry.pol"
     
 
     # Ensure directory exists and clean it
