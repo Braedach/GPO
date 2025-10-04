@@ -23,7 +23,7 @@ function Set-RestorePoint {
 
 function Get-LGPO {
     $destinationPath = "C:\ProgramData\GPO"
-    $lgpoZipUrl = "https://github.com/Braedach/GPO/releases/download/v1.0/LGPO.zip"
+    $lgpoZipUrl = "https://github.com/Braedach/GPO/releases/download/lgpo/LGPO.zip"
     $lgpoZip = "$destinationPath\LGPO.zip"
     $urlgpo  = "https://raw.githubusercontent.com/Braedach/GPO/development/registry.pol"
 
