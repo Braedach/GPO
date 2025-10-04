@@ -1,29 +1,24 @@
 
-function get-windowsedition {
-
+function Get-WindowsEdition {
     <#
     .SYNOPSIS
-      Checks the Windows Edition is compliant
-      Tested 2025-10-01
+        Checks the Windows Edition is compliant
+        Tested 2025-10-01
 
     .DESCRIPTION
-      Checks the Windows Edition is compliant
-      If not the code will exit
+        This function checks the Windows edition to ensure it is not a Home edition.
     #>
 
-
-    $edition = (Get-WmiObject -Class Win32_OperatingSystem).OperatingSystemSKU
-    # List of SKU numbers for Windows Home Editions
-    $homeEditions = @(1, 2, 3, 4, 5, 98, 99)
+    $edition = (Get-CimInstance -ClassName Win32_OperatingSystem).OperatingSystemSKU
+    # Expanded list of known Home edition SKUs (Windows 10/11 Home variants)
+    $homeEditions = @(1, 2, 3, 4, 5, 98, 99, 101, 121)
 
     if ($homeEditions -contains $edition) {
-        Write-Host "Unsupported Windows edition detected: Home Edition. Exiting script..." -ForegroundColor Red
-        exit
+        throw "Unsupported Windows edition detected: Home Edition."
     } else {
         Write-Host "Windows edition is valid for this operation." -ForegroundColor Green
     }
 }
-
 
 function reset-lgpo {
 
