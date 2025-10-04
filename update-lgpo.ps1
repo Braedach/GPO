@@ -56,7 +56,7 @@ function Get-LGPO {
 
     # This code is not right and will not work until the files are uploaded to the repo or release assets.
     # Please upload LGPO.zip and registry.pol to the repository or release assets for this script to function correctly.
-    # YOU NEED TO CHANGE THE RELEASES SO THAT THEY ARE SEPERATE FROM THE DEVELOPMENT BRANCH - THIS CURRENTLY WONT WORK - IT PULLS THE FILES FROM THE SAME LOCATION
+    # ENSURE THAT YOU SEPERATE THE PRODUCTION FROM DEVELOPMENT - THIS SHOULD NOW WORK
     
     $destinationPath = "$env:ProgramData\GPO"
     $lgpoZipUrl = "https://github.com/Braedach/GPO/releases/download/production/LGPO.zip"
