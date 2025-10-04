@@ -47,6 +47,8 @@ function Get-LGPO {
         This function downloads LGPO.zip and registry.pol from GitHub, extracts LGPO.exe, and applies the policies.
     #>
 
+    # This code is not right and will not work until the files are uploaded to the repo or release assets.
+    # Please upload LGPO.zip and registry.pol to the repository or release assets for this script to function correctly.
     $destinationPath = "C:\ProgramData\GPO"
     $lgpoZipUrl = "https://github.com/Braedach/GPO/releases/download/lgpo/LGPO.zip"
     $lgpoZip = "$destinationPath\LGPO.zip"
