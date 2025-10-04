@@ -100,12 +100,14 @@ function reset-lgpo {
 }
 
 function restart-windows {
-    # Restart Windows - notify the user
-    # Notify user and restart
-    $msg = "A major change has occured by the Network Administrator. The system will restart in 120 seconds. Please save your work."
-    msg * $msg
-    shutdown.exe /r /t 120 /c "Group policy removal completed. Restarting system."
-    
+    <#
+    .SYNOPSIS
+        Schedules a system restart to apply group policy changes.
+        Tested 2025-10-04
+    .DESCRIPTION
+        This function schedules a system restart in 2 minutes with a notification.
+    #>
+    shutdown.exe /r /t 180 /c "Group policy update completed. Restarting system in 3 minutes."
 }
 
 get-windowsedition
