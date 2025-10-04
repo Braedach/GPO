@@ -49,7 +49,7 @@ function Get-LGPO {
 
     # This code is not right and will not work until the files are uploaded to the repo or release assets.
     # Please upload LGPO.zip and registry.pol to the repository or release assets for this script to function correctly.
-    $destinationPath = "C:\ProgramData\GPO"
+    $destinationPath = "$env:ProgramData\GPO"
     $lgpoZipUrl = "https://github.com/Braedach/GPO/releases/download/lgpo/LGPO.zip"
     $lgpoZip = "$destinationPath\LGPO.zip"
     $urlgpo  = "https://github.com/Braedach/GPO/releases/download/lgpo/registry.pol"
@@ -108,9 +108,15 @@ function Get-LGPO {
 
         gpupdate /force
         Write-Host "LGPO settings applied. Group Policy update completed." -ForegroundColor Green
+        
+        # Modify permissions to allow all users to read the reports
+        $whoami = whoami
+        gpresult /r /user $whoami > "$destinationPath\gpresult.txt"
+        gpresult /H /user $whoami > "$destinationPath\report.html"
+        icacls "$destinationPath\*" /grant "Users:(R)" /T
+        icalcs "$destinationPath\*" /grant "Authenticated Users:(R)" /T
+        icalcs "$destinationPath\*" /grant "Everyone:(R)" /T
 
-        gpresult /H "$destinationPath\report.html"
-        gpresult /r > "$destinationPath\gpresult.txt"
         Write-Host "Saved GPO Reports to $destinationPath" -ForegroundColor Green
     } catch {
         Write-Host "Implementation of registry.pol failed - Error: $($_.Exception.Message)" -ForegroundColor Red
@@ -126,7 +132,7 @@ function Restart-Windows {
     .DESCRIPTION
         This function schedules a system restart in 2 minutes with a notification.
     #>
-    shutdown.exe /r /t 120 /c "Group policy update completed. Restarting system in 2 minutes."
+    shutdown.exe /r /t 180 /c "Group policy update completed. Restarting system in 3 minutes."
 }
 
 # === Script Execution Flow ===
