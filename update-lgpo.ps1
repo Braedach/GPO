@@ -47,7 +47,7 @@ function get-lgpo {
     #>
 
     # Variables
-    $destinationPath = "C:\Program Files\GPO"
+    $destinationPath = "C:\Program Data\GPO"
     $urltool = "https://raw.githubusercontent.com/Braedach/GPO/development/LGPO.exe"
     $urlgpo = "https://raw.githubusercontent.com/Braedach/GPO/development/registry.pol"
 
