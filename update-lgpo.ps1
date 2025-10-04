@@ -1,4 +1,13 @@
 function Get-WindowsEdition {
+    <#
+    .SYNOPSIS
+        Checks the Windows Edition is compliant
+        Tested 2025-10-01
+
+    .DESCRIPTION
+        This function checks the Windows edition to ensure it is not a Home edition.
+    #>
+
     $edition = (Get-CimInstance -ClassName Win32_OperatingSystem).OperatingSystemSKU
     $homeEditions = @(1, 2, 3, 4, 5, 98, 99)
 
@@ -11,6 +20,14 @@ function Get-WindowsEdition {
 }
 
 function Set-RestorePoint {
+    <#
+    .SYNOPSIS
+        Creates a system restore point before applying group policies.
+        Tested 2025-10-04
+    .DESCRIPTION
+        This function sets the system restore point creation frequency and creates a restore point.
+    #>
+
     try {
         reg.exe ADD "HKLM\Software\Microsoft\Windows NT\CurrentVersion\SystemRestore" /v SystemRestorePointCreationFrequency /t REG_DWORD /d 5 /f
         Write-Host "System restore point interval updated to 5 minutes"
@@ -22,10 +39,19 @@ function Set-RestorePoint {
 }
 
 function Get-LGPO {
+    <#
+    .SYNOPSIS
+        Downloads and applies Local Group Policy Objects (LGPO) from a specified source.
+        Tested 2025-10-04
+    .DESCRIPTION
+        This function downloads LGPO.zip and registry.pol from GitHub, extracts LGPO.exe, and applies the policies.
+    #>
+
     $destinationPath = "C:\ProgramData\GPO"
     $lgpoZipUrl = "https://github.com/Braedach/GPO/releases/download/lgpo/LGPO.zip"
     $lgpoZip = "$destinationPath\LGPO.zip"
-    $urlgpo  = "https://raw.githubusercontent.com/Braedach/GPO/development/registry.pol"
+    $urlgpo  = "https://github.com/Braedach/GPO/releases/download/lgpo/registry.pol"
+    
 
     # Ensure directory exists and clean it
     if (-not (Test-Path $destinationPath)) {
@@ -91,9 +117,14 @@ function Get-LGPO {
 }
 
 function Restart-Windows {
-    $msg = "A major change has occurred by the Network Administrator. The system will restart in 120 seconds. Please save your work."
-    msg * $msg
-    shutdown.exe /r /t 120 /c "Group policy update completed. Restarting system."
+    <#
+    .SYNOPSIS
+        Schedules a system restart to apply group policy changes.
+        Tested 2025-10-04
+    .DESCRIPTION
+        This function schedules a system restart in 2 minutes with a notification.
+    #>
+    shutdown.exe /r /t 120 /c "Group policy update completed. Restarting system in 2 minutes."
 }
 
 # === Script Execution Flow ===
