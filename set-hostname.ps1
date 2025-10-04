@@ -26,8 +26,7 @@ function Set-Hostname {
 
     try {
         Rename-Computer -NewName $NewHostname -Force -ErrorAction Stop
-        msg * "The hostname has been changed to '$NewHostname'. The system will restart in 120 seconds."
-        shutdown.exe /r /t 120 /c "System restart scheduled to apply hostname change."
+        shutdown.exe /r /t 180 /c "System restart scheduled in 3 minutes to apply hostname change."
     }
     catch {
         Write-Error "Failed to change hostname: $_"
