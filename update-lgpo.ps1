@@ -1,118 +1,102 @@
-
-
-
-function get-windowsedition {
-
-    <#
-    .SYNOPSIS
-      Checks the Windows Edition is compliant
-      Tested 2025-10-01
-
-    .DESCRIPTION
-      Checks the Windows Edition is compliant
-      If not the code will exit
-    #>
-
-
-    $edition = (Get-WmiObject -Class Win32_OperatingSystem).OperatingSystemSKU
-    # List of SKU numbers for Windows Home Editions
+function Get-WindowsEdition {
+    $edition = (Get-CimInstance -ClassName Win32_OperatingSystem).OperatingSystemSKU
     $homeEditions = @(1, 2, 3, 4, 5, 98, 99)
 
     if ($homeEditions -contains $edition) {
         Write-Host "Unsupported Windows edition detected: Home Edition. Exiting script..." -ForegroundColor Red
-        exit
+        exit 1
     } else {
         Write-Host "Windows edition is valid for this operation." -ForegroundColor Green
     }
 }
 
-
-
-
-function get-lgpo {
-
-    <#
-    .SYNOPSIS
-    Automates the download, application, and reporting of Local Group Policy settings using LGPO.exe.
-
-    .DESCRIPTION
-    This function performs the following tasks:
-    1. Ensures the target GPO directory exists and is clean.
-    2. Downloads LGPO.exe and registry.pol from a specified GitHub repository.
-    3. Applies the registry.pol settings using LGPO.exe.
-    4. Forces a Group Policy update.
-    5. Generates Group Policy result reports in HTML and text formats.
-
-    The function exits on download or execution failure to ensure integrity.
-    #>
-
-    # Variables
-    $destinationPath = "C:\Program Data\GPO"
-    $urltool = "https://raw.githubusercontent.com/Braedach/GPO/development/LGPO.exe"
-    $urlgpo = "https://raw.githubusercontent.com/Braedach/GPO/development/registry.pol"
-
-    $files = @{
-        "LGPO.exe"     = $urltool
-        "registry.pol" = $urlgpo
+function Set-RestorePoint {
+    try {
+        reg.exe ADD "HKLM\Software\Microsoft\Windows NT\CurrentVersion\SystemRestore" /v SystemRestorePointCreationFrequency /t REG_DWORD /d 5 /f
+        Write-Host "System restore point interval updated to 5 minutes"
+        Checkpoint-Computer -Description "Pre Group Policy Application" -RestorePointType "MODIFY_SETTINGS"
+        Write-Host "System restore point created successfully."
+    } catch {
+        Write-Host "Failed to create system restore point: $($_.Exception.Message)" -ForegroundColor Yellow
     }
+}
 
-    # Ensure the GPO directory exists - purge it - create it if missing
-    if (Test-Path $destinationPath) {
-        Get-ChildItem -Path $destinationPath -File | Remove-Item -Force
-        Write-Host "All files in $destinationPath have been deleted." -ForegroundColor Green
-    }
-    else {
-        Write-Host "Directory does not exist: $destinationPath" -ForegroundColor Red
-        New-Item -ItemType Directory -Path $destinationPath -Force
+function Get-LGPO {
+    $destinationPath = "C:\ProgramData\GPO"
+    $lgpoZipUrl = "https://github.com/Braedach/GPO/raw/development/LGPO.zip"
+    $lgpoZip = "$destinationPath\LGPO.zip"
+    $urlgpo  = "https://raw.githubusercontent.com/Braedach/GPO/development/registry.pol"
+
+    # Ensure directory exists and clean it
+    if (-not (Test-Path $destinationPath)) {
+        New-Item -ItemType Directory -Path $destinationPath -Force | Out-Null
         Write-Host "Directory created: $destinationPath" -ForegroundColor Green
+    } else {
+        Get-ChildItem -Path $destinationPath -File | Remove-Item -Force
+        Write-Host "Cleaned existing files in $destinationPath" -ForegroundColor Green
     }
 
-    # Download all the files required - exit on failure
+    # Download LGPO.zip
     try {
-        foreach ($file in $files.Keys) {
-            $url = $files[$file]
-            $destination = "$destinationPath\$file"
+        Invoke-WebRequest -Uri $lgpoZipUrl -OutFile $lgpoZip -ErrorAction Stop
+        Write-Host "Successfully downloaded LGPO.zip" -ForegroundColor Green
+    } catch {
+        Write-Host "Failed to download LGPO.zip. Error: $($_.Exception.Message)" -ForegroundColor Red
+        exit 1
+    }
 
-            Invoke-WebRequest -Uri $url -OutFile $destination -ErrorAction Stop
-            Write-Host "Successfully downloaded $file" -ForegroundColor Green
+    # Extract LGPO.exe
+    try {
+        Expand-Archive -Path $lgpoZip -DestinationPath $destinationPath -Force
+        $lgpoExe = Get-ChildItem -Path $destinationPath -Recurse -Filter "LGPO.exe" | Select-Object -First 1
+        if ($null -eq $lgpoExe) {
+            Write-Host "LGPO.exe not found in archive." -ForegroundColor Red
+            exit 1
         }
-    } 
-    catch {
-        Write-Host "Failed to download $file. Error: $($_.Exception.Message)" -ForegroundColor Red
-        Write-Host "Exiting script due to download failure." -ForegroundColor Red
-        exit
+        Write-Host "LGPO.exe extracted to $($lgpoExe.FullName)" -ForegroundColor Green
+    } catch {
+        Write-Host "Failed to extract LGPO.exe. Error: $($_.Exception.Message)" -ForegroundColor Red
+        exit 1
     }
 
-    Write-Host "Files successfully downloaded to $destinationPath" -ForegroundColor Green
-
+    # Download registry.pol
     try {
-        Set-Location $destinationPath
-        .\LGPO.exe /m $destinationPath\registry.pol /v > $destinationPath\lgpo-verbose.txt 2> $destinationPath\lgpo-error.txt
+        $destinationPol = "$destinationPath\registry.pol"
+        Invoke-WebRequest -Uri $urlgpo -OutFile $destinationPol -ErrorAction Stop
+        Write-Host "Successfully downloaded registry.pol" -ForegroundColor Green
+    } catch {
+        Write-Host "Failed to download registry.pol. Error: $($_.Exception.Message)" -ForegroundColor Red
+        exit 1
+    }
 
-        gpupdate /force    
+    # Apply registry.pol with LGPO.exe
+    try {
+        & $lgpoExe.FullName /m "$destinationPath\registry.pol" /v > "$destinationPath\lgpo-verbose.txt" 2> "$destinationPath\lgpo-error.txt"
+        if ($LASTEXITCODE -ne 0) {
+            Write-Host "LGPO.exe failed with exit code $LASTEXITCODE" -ForegroundColor Red
+            exit $LASTEXITCODE
+        }
+
+        gpupdate /force
         Write-Host "LGPO settings applied. Group Policy update completed." -ForegroundColor Green
 
         gpresult /H "$destinationPath\report.html"
         gpresult /r > "$destinationPath\gpresult.txt"
         Write-Host "Saved GPO Reports to $destinationPath" -ForegroundColor Green
-    }
-    catch {
+    } catch {
         Write-Host "Implementation of registry.pol failed - Error: $($_.Exception.Message)" -ForegroundColor Red
-        exit
+        exit 1
     }
 }
 
-
-function restart-windows {
-    # Restart Windows - notify the user
-    # Notify user and restart
-    $msg = "A major change has occured by the Network Administrator. The system will restart in 120 seconds. Please save your work."
+function Restart-Windows {
+    $msg = "A major change has occurred by the Network Administrator. The system will restart in 120 seconds. Please save your work."
     msg * $msg
     shutdown.exe /r /t 120 /c "Group policy update completed. Restarting system."
-    
 }
 
-# Updates the Local Group Policy Object using LGPO.exe and a predefined registry.pol file
-get-windowsedition
-Get-lgpo
-restart-windows
+# === Script Execution Flow ===
+Get-WindowsEdition
+Set-RestorePoint
+Get-LGPO
+Restart-Windows
