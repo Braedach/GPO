@@ -38,12 +38,13 @@ function Get-LGPO {
 
     # Download LGPO.zip
     try {
-        Invoke-WebRequest -Uri $lgpoZipUrl -OutFile $lgpoZip -ErrorAction Stop
-        Write-Host "Successfully downloaded LGPO.zip" -ForegroundColor Green
+    Invoke-WebRequest -Uri $lgpoZipUrl -OutFile $lgpoZip -ErrorAction Stop
+    Write-Host "Successfully downloaded LGPO.zip" -ForegroundColor Green
     } catch {
-        Write-Host "Failed to download LGPO.zip. Error: $($_.Exception.Message)" -ForegroundColor Red
-        exit 1
-    }
+    Write-Host "LGPO.zip not found at $lgpoZipUrl. Please ensure it is uploaded to the repo or release assets." -ForegroundColor Red
+    exit 1
+    }   
+
 
     # Extract LGPO.exe
     try {
