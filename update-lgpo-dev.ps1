@@ -9,11 +9,11 @@ function Get-WindowsEdition {
     #>
 
     $edition = (Get-CimInstance -ClassName Win32_OperatingSystem).OperatingSystemSKU
-    $homeEditions = @(1, 2, 3, 4, 5, 98, 99)
+    # Expanded list of known Home edition SKUs (Windows 10/11 Home variants)
+    $homeEditions = @(1, 2, 3, 4, 5, 98, 99, 101, 121)
 
     if ($homeEditions -contains $edition) {
-        Write-Host "Unsupported Windows edition detected: Home Edition. Exiting script..." -ForegroundColor Red
-        exit 1
+        throw "Unsupported Windows edition detected: Home Edition."
     } else {
         Write-Host "Windows edition is valid for this operation." -ForegroundColor Green
     }
@@ -29,8 +29,9 @@ function Set-RestorePoint {
     #>
 
     try {
-        reg.exe ADD "HKLM\Software\Microsoft\Windows NT\CurrentVersion\SystemRestore" /v SystemRestorePointCreationFrequency /t REG_DWORD /d 5 /f
-        Write-Host "System restore point interval updated to 5 minutes"
+        # Setting to 0 allows restore points to be created without frequency restriction
+        reg.exe ADD "HKLM\Software\Microsoft\Windows NT\CurrentVersion\SystemRestore" /v SystemRestorePointCreationFrequency /t REG_DWORD /d 0 /f
+        Write-Host "System restore point interval updated to allow immediate creation"
         Checkpoint-Computer -Description "Pre Group Policy Application" -RestorePointType "MODIFY_SETTINGS"
         Write-Host "System restore point created successfully."
     } catch {
@@ -56,7 +57,7 @@ function Get-LGPO {
 
     # This code is not right and will not work until the files are uploaded to the repo or release assets.
     # Please upload LGPO.zip and registry.pol to the repository or release assets for this script to function correctly.
-    # ENSURE THAT YOU SEPERATE THE PRODUCTION FROM DEVELOPMENT - THIS SHOULD NOW WORK
+    # ENSURE THAT YOU SEPARATE THE PRODUCTION FROM DEVELOPMENT - THIS SHOULD NOW WORK
     
     $destinationPath = "$env:ProgramData\GPO"
     $lgpoZipUrl = "https://github.com/Braedach/GPO/releases/download/development/LGPO.zip"
@@ -75,13 +76,12 @@ function Get-LGPO {
 
     # Download LGPO.zip
     try {
-    Invoke-WebRequest -Uri $lgpoZipUrl -OutFile $lgpoZip -ErrorAction Stop
-    Write-Host "Successfully downloaded LGPO.zip" -ForegroundColor Green
+        Invoke-WebRequest -Uri $lgpoZipUrl -OutFile $lgpoZip -ErrorAction Stop
+        Write-Host "Successfully downloaded LGPO.zip" -ForegroundColor Green
     } catch {
-    Write-Host "LGPO.zip not found at $lgpoZipUrl. Please ensure it is uploaded to the repo or release assets." -ForegroundColor Red
-    exit 1
+        Write-Host "LGPO.zip not found at $lgpoZipUrl. Please ensure it is uploaded to the repo or release assets." -ForegroundColor Red
+        exit 1
     }   
-
 
     # Extract LGPO.exe
     try {
@@ -118,10 +118,10 @@ function Get-LGPO {
         gpupdate /force
         Write-Host "LGPO settings applied. Group Policy update completed." -ForegroundColor Green
         
-        # Modify permissions to allow all users to read the reports
-        $whoami = whoami
+        # Generate GPO reports
+        $whoami = "$env:USERDOMAIN\$env:USERNAME"
         gpresult /r /user $whoami > "$destinationPath\gpresult.txt"
-        gpresult /H /user $whoami > "$destinationPath\report.html"
+        gpresult /H "$destinationPath\report.html"
 
         Write-Host "Saved GPO Reports to $destinationPath" -ForegroundColor Green
     } catch {
@@ -136,7 +136,7 @@ function Restart-Windows {
         Schedules a system restart to apply group policy changes.
         Tested 2025-10-04
     .DESCRIPTION
-        This function schedules a system restart in 2 minutes with a notification.
+        This function schedules a system restart in 3 minutes with a notification.
     #>
     shutdown.exe /r /t 180 /c "Group policy update completed. Restarting system in 3 minutes."
 }
@@ -146,4 +146,3 @@ Get-WindowsEdition
 Set-RestorePoint
 Get-LGPO
 Restart-Windows
-
