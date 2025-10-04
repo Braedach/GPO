@@ -9,11 +9,11 @@ function Get-WindowsEdition {
     #>
 
     $edition = (Get-CimInstance -ClassName Win32_OperatingSystem).OperatingSystemSKU
-    $homeEditions = @(1, 2, 3, 4, 5, 98, 99)
+    # Expanded list of known Home edition SKUs (Windows 10/11 Home variants)
+    $homeEditions = @(1, 2, 3, 4, 5, 98, 99, 101, 121)
 
     if ($homeEditions -contains $edition) {
-        Write-Host "Unsupported Windows edition detected: Home Edition. Exiting script..." -ForegroundColor Red
-        exit 1
+        throw "Unsupported Windows edition detected: Home Edition."
     } else {
         Write-Host "Windows edition is valid for this operation." -ForegroundColor Green
     }
