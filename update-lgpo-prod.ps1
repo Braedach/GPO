@@ -121,7 +121,7 @@ function Get-LGPO {
         # Modify permissions to allow all users to read the reports
         $whoami = whoami
         gpresult /r /user $whoami > "$destinationPath\gpresult.txt"
-        gpresult /H /user $whoami > "$destinationPath\report.html"
+        # gpresult /H /user $whoami > "$destinationPath\report.html"
 
         Write-Host "Saved GPO Reports to $destinationPath" -ForegroundColor Green
     } catch {

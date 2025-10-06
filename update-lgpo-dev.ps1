@@ -121,7 +121,7 @@ function Get-LGPO {
         # Generate GPO reports
         $whoami = "$env:USERDOMAIN\$env:USERNAME"
         gpresult /r /user $whoami > "$destinationPath\gpresult.txt"
-        gpresult /H /user $whoami > "$destinationPath\report.html"
+        # gpresult /H /user $whoami > "$destinationPath\report.html"
 
         Write-Host "Saved GPO Reports to $destinationPath" -ForegroundColor Green
     } catch {
