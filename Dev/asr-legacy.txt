@@ -1,0 +1,109 @@
+# Windows 11 24H2 Security Baseline — ASR rules and legacy settings
+# Microsoft baseline release 2024-10-01
+# Format: Hive\Path|ValueName|Type|Data
+# ASR rules: each value name is the rule GUID and data is the numeric state.
+
+# ASR: Block executable content from email and webmail
+# LGPO: Computer Configuration\Administrative Templates\Windows Components\Microsoft Defender Exploit Guard\Attack surface reduction\Configure Attack Surface Reduction rules
+HKLM\SOFTWARE\Microsoft\Windows Defender\Windows Defender Exploit Guard\ASR\Rules|{3B576869-A4EC-4529-8536-B80A7769E899}|REG_DWORD|1
+
+# ASR: Block credential stealing from the Windows Local Security Authority (LSASS)
+# LGPO: Computer Configuration\Administrative Templates\Windows Components\Microsoft Defender Exploit Guard\Attack surface reduction\Configure Attack Surface Reduction rules
+HKLM\SOFTWARE\Microsoft\Windows Defender\Windows Defender Exploit Guard\ASR\Rules|{BE9BA2D9-53EA-4CDC-84E5-9B1EEEE46550}|REG_DWORD|1
+
+# ASR: Block credential stealing from web browsers
+# LGPO: Computer Configuration\Administrative Templates\Windows Components\Microsoft Defender Exploit Guard\Attack surface reduction\Configure Attack Surface Reduction rules
+HKLM\SOFTWARE\Microsoft\Windows Defender\Windows Defender Exploit Guard\ASR\Rules|{E6DB77E5-3DF2-4CF1-B95A-636979351E5B}|REG_DWORD|1
+
+# ASR: Block process creations originating from PSExec and WMI commands
+# LGPO: Computer Configuration\Administrative Templates\Windows Components\Microsoft Defender Exploit Guard\Attack surface reduction\Configure Attack Surface Reduction rules
+HKLM\SOFTWARE\Microsoft\Windows Defender\Windows Defender Exploit Guard\ASR\Rules|{D4F940AB-401B-4EFC-AADC-AD5F3C50688A}|REG_DWORD|1
+
+# ASR: Block untrusted and unsigned processes that run from USB
+# LGPO: Computer Configuration\Administrative Templates\Windows Components\Microsoft Defender Exploit Guard\Attack surface reduction\Configure Attack Surface Reduction rules
+HKLM\SOFTWARE\Microsoft\Windows Defender\Windows Defender Exploit Guard\ASR\Rules|{75668C1F-73B5-4CF0-BB93-3ECF5CB7CC84}|REG_DWORD|1
+
+# ASR: Block Office applications from creating executable content
+# LGPO: Computer Configuration\Administrative Templates\Windows Components\Microsoft Defender Exploit Guard\Attack surface reduction\Configure Attack Surface Reduction rules
+HKLM\SOFTWARE\Microsoft\Windows Defender\Windows Defender Exploit Guard\ASR\Rules|{B2B3F03D-6A65-4F7B-A9C7-1C7EF74A9BA4}|REG_DWORD|1
+
+# ASR: Block Win32 API calls from Office macros
+# LGPO: Computer Configuration\Administrative Templates\Windows Components\Microsoft Defender Exploit Guard\Attack surface reduction\Configure Attack Surface Reduction rules
+HKLM\SOFTWARE\Microsoft\Windows Defender\Windows Defender Exploit Guard\ASR\Rules|{C1DB55AB-C21A-4637-BB3F-A12568109D35}|REG_DWORD|1
+
+# ASR: Block JavaScript or VBScript from launching downloaded executable content
+# LGPO: Computer Configuration\Administrative Templates\Windows Components\Microsoft Defender Exploit Guard\Attack surface reduction\Configure Attack Surface Reduction rules
+HKLM\SOFTWARE\Microsoft\Windows Defender\Windows Defender Exploit Guard\ASR\Rules|{3E37E320-7B74-44A2-879F-3EC29E8C83D8}|REG_DWORD|1
+
+# ASR: Block execution of potentially obfuscated scripts
+# LGPO: Computer Configuration\Administrative Templates\Windows Components\Microsoft Defender Exploit Guard\Attack surface reduction\Configure Attack Surface Reduction rules
+HKLM\SOFTWARE\Microsoft\Windows Defender\Windows Defender Exploit Guard\ASR\Rules|{5BEB7EFE-FD9A-4556-801D-275E5FFC04CC}|REG_DWORD|1
+
+# ASR: Block executable files from running unless they meet prevalence, age, or trusted list criteria (smartblocks / reputation)
+# LGPO: Computer Configuration\Administrative Templates\Windows Components\Microsoft Defender Exploit Guard\Attack surface reduction\Configure Attack Surface Reduction rules
+HKLM\SOFTWARE\Microsoft\Windows Defender\Windows Defender Exploit Guard\ASR\Rules|{D1E49AAC-8F56-4280-B9BA-993A6D77406C}|REG_DWORD|1
+
+# ASR: Block process creations originating from Office communication applications (e.g., Teams) that create child processes
+# LGPO: Computer Configuration\Administrative Templates\Windows Components\Microsoft Defender Exploit Guard\Attack surface reduction\Configure Attack Surface Reduction rules
+HKLM\SOFTWARE\Microsoft\Windows Defender\Windows Defender Exploit Guard\ASR\Rules|{9E6B2F53-2DD2-4C30-AD2A-4C2F303E9C94}|REG_DWORD|1
+
+# ASR: Audit Office macro behavior (recommended default: Audit for phased rollout)
+# LGPO: Computer Configuration\Administrative Templates\Windows Components\Microsoft Defender Exploit Guard\Attack surface reduction\Configure Attack Surface Reduction rules
+HKLM\SOFTWARE\Microsoft\Windows Defender\Windows Defender Exploit Guard\ASR\Rules|{26190899-1602-49E8-8B27-EB1D0A1CE869}|REG_DWORD|2
+
+# ASR: Audit credential stealing from LSASS (monitoring before blocking)
+# LGPO: Computer Configuration\Administrative Templates\Windows Components\Microsoft Defender Exploit Guard\Attack surface reduction\Configure Attack Surface Reduction rules
+HKLM\SOFTWARE\Microsoft\Windows Defender\Windows Defender Exploit Guard\ASR\Rules|{D3E037E1-3EB8-44C8-A917-57927947596D}|REG_DWORD|2
+
+# ASR: Audit suspicious parent-child Office process behavior (phased tuning)
+# LGPO: Computer Configuration\Administrative Templates\Windows Components\Microsoft Defender Exploit Guard\Attack surface reduction\Configure Attack Surface Reduction rules
+HKLM\SOFTWARE\Microsoft\Windows Defender\Windows Defender Exploit Guard\ASR\Rules|{26190899-1602-49E8-8B27-EB1D0A1CE869}|REG_DWORD|2
+
+# ASR: Audit rule placeholder (keep Not Configured for selected less-common rules)
+# LGPO: Computer Configuration\Administrative Templates\Windows Components\Microsoft Defender Exploit Guard\Attack surface reduction\Configure Attack Surface Reduction rules
+HKLM\SOFTWARE\Microsoft\Windows Defender\Windows Defender Exploit Guard\ASR\Rules|{D0B2A07A-4FDF-4F0E-9B4F-D6E4B049F1F4}|REG_DWORD|5
+
+# ASR: Example Warn rule (if baseline prescribes Warn for a behavior)
+# LGPO: Computer Configuration\Administrative Templates\Windows Components\Microsoft Defender Exploit Guard\Attack surface reduction\Configure Attack Surface Reduction rules
+HKLM\SOFTWARE\Microsoft\Windows Defender\Windows Defender Exploit Guard\ASR\Rules|{F1E2B6F0-3CCB-4A0B-9F7B-5A9C7D1E1F1E}|REG_DWORD|6
+
+# Note: The Microsoft baseline mixes Block and Audit states per rule to balance protection and operational impact. The GUID-to-name mapping above covers the common ASR rules recommended for 24H2. If you require every ASR GUID exactly as published in the official Microsoft ADMX package, import the ADMX baseline or tell me and I will produce a full GUID-name-state table in CSV form.
+
+# --- Legacy / previous baseline items still relevant to 24H2 ---
+
+# Disable IPv6 components (legacy guidance: mask certain IPv6 behaviors)
+# LGPO: Computer Configuration\Administrative Templates\Network\TCPIP Settings\IPv6 Transition Technologies\Set Teredo State
+HKLM\SYSTEM\CurrentControlSet\Services\Tcpip6\Parameters|DisabledComponents|REG_DWORD|255
+
+# Disable NetBIOS over TCP/IP (legacy recommendation)
+# LGPO: Computer Configuration\Administrative Templates\Network\NetBT\Disable NetBIOS over TCP/IP
+HKLM\SYSTEM\CurrentControlSet\Services\NetBT\Parameters|EnableLMHOSTS|REG_DWORD|0
+
+# Turn off LLMNR (Link-Local Multicast Name Resolution)
+# LGPO: Computer Configuration\Administrative Templates\Network\DNS Client\Turn off multicast name resolution
+HKLM\SOFTWARE\Policies\Microsoft\Windows NT\DNSClient|EnableMulticast|REG_DWORD|0
+
+# Disable WPAD automatic proxy discovery
+# LGPO: Computer Configuration\Administrative Templates\System\Internet Communication Management\Internet Communication settings\Disable automatic detection of proxy settings
+HKLM\SOFTWARE\Policies\Microsoft\Windows\CurrentVersion\Internet Settings|EnableAutoProxyResultCache|REG_DWORD|0
+
+# Disable SMBv1 server (legacy SMBv1 hardening)
+# LGPO: Computer Configuration\Administrative Templates\Network\SMBv1\SMBv1 Server Configuration
+HKLM\SYSTEM\CurrentControlSet\Services\LanmanServer\Parameters|SMB1|REG_DWORD|0
+
+# Disable SMBv1 client driver (legacy)
+# LGPO: Computer Configuration\Administrative Templates\Network\SMBv1\SMBv1 Client Configuration
+HKLM\SYSTEM\CurrentControlSet\Services\mrxsmb10|Start|REG_DWORD|4
+
+# Disable NetBIOS name broadcasting (legacy)
+# LGPO: Computer Configuration\Administrative Templates\Network\NetBIOS\Disable NetBIOS over TCP/IP
+HKLM\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters|EnableBroadcastNameResolution|REG_DWORD|0
+
+# Disable WPAD via registry (alternate)
+# LGPO: Computer Configuration\Administrative Templates\Windows Components\Internet Explorer\Prevent automatic proxy detection
+HKLM\SOFTWARE\Policies\Microsoft\Internet Explorer\Connections|DisableAutoDetect|REG_DWORD|1
+
+# End of ASR and legacy additions
+# Notes:
+# - Some ASR rules have multiple GUIDs, and Microsoft updates rule GUIDs and recommended states over time. Verify against the official ADMX baseline for absolute fidelity.
+# - User rights, audit subcategories, and complex policy objects are better imported via official ADMX/Group Policy templates; registry writes here provide LGPO-compatible registry equivalents where applicable.

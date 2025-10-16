@@ -1,0 +1,79 @@
+# ASR Rule {3B576869-A4EC-4529-8536-B80A7769E899} - Recommended state: 1
+# LGPO: Computer Configuration\Administrative Templates\Windows Components\Microsoft Defender Exploit Guard\Attack surface reduction
+HKLM\SOFTWARE\Microsoft\Windows Defender\Windows Defender Exploit Guard\ASR\Rules|{3B576869-A4EC-4529-8536-B80A7769E899}|REG_DWORD|1
+
+# ASR Rule {D4F940AB-401B-4EFC-AADC-AD5F3C50688A} - Recommended state: 1
+# LGPO: Computer Configuration\Administrative Templates\Windows Components\Microsoft Defender Exploit Guard\Attack surface reduction
+HKLM\SOFTWARE\Microsoft\Windows Defender\Windows Defender Exploit Guard\ASR\Rules|{D4F940AB-401B-4EFC-AADC-AD5F3C50688A}|REG_DWORD|1
+
+# ASR Rule {D3E037E1-3EB8-44C8-A917-57927947596D} - Recommended state: 1
+# LGPO: Computer Configuration\Administrative Templates\Windows Components\Microsoft Defender Exploit Guard\Attack surface reduction
+HKLM\SOFTWARE\Microsoft\Windows Defender\Windows Defender Exploit Guard\ASR\Rules|{D3E037E1-3EB8-44C8-A917-57927947596D}|REG_DWORD|1
+
+# ASR Rule {75668C1F-73B5-4CF0-BB93-3ECF5CB7CC84} - Recommended state: 1
+# LGPO: Computer Configuration\Administrative Templates\Windows Components\Microsoft Defender Exploit Guard\Attack surface reduction
+HKLM\SOFTWARE\Microsoft\Windows Defender\Windows Defender Exploit Guard\ASR\Rules|{75668C1F-73B5-4CF0-BB93-3ECF5CB7CC84}|REG_DWORD|1
+
+# ASR Rule {DCB9C2D6-2635-4F21-A6EB-DCCF5A7D6A63} - Recommended state: 1
+# LGPO: Computer Configuration\Administrative Templates\Windows Components\Microsoft Defender Exploit Guard\Attack surface reduction
+HKLM\SOFTWARE\Microsoft\Windows Defender\Windows Defender Exploit Guard\ASR\Rules|{DCB9C2D6-2635-4F21-A6EB-DCCF5A7D6A63}|REG_DWORD|1
+
+# ASR Rule {E6DB77E5-3DF2-4CF1-B95A-636979351E5B} - Recommended state: 1
+# LGPO: Computer Configuration\Administrative Templates\Windows Components\Microsoft Defender Exploit Guard\Attack surface reduction
+HKLM\SOFTWARE\Microsoft\Windows Defender\Windows Defender Exploit Guard\ASR\Rules|{E6DB77E5-3DF2-4CF1-B95A-636979351E5B}|REG_DWORD|1
+
+# ASR Rule {5BEB7EFE-FD9A-4556-801D-275E5FFC04CC} - Recommended state: 1
+# LGPO: Computer Configuration\Administrative Templates\Windows Components\Microsoft Defender Exploit Guard\Attack surface reduction
+HKLM\SOFTWARE\Microsoft\Windows Defender\Windows Defender Exploit Guard\ASR\Rules|{5BEB7EFE-FD9A-4556-801D-275E5FFC04CC}|REG_DWORD|1
+
+# ASR Rule {B2B3F03D-6A65-4F7B-A9C7-1C7EF74A9BA4} - Recommended state: 1
+# LGPO: Computer Configuration\Administrative Templates\Windows Components\Microsoft Defender Exploit Guard\Attack surface reduction
+HKLM\SOFTWARE\Microsoft\Windows Defender\Windows Defender Exploit Guard\ASR\Rules|{B2B3F03D-6A65-4F7B-A9C7-1C7EF74A9BA4}|REG_DWORD|1
+
+# ASR Rule {C1DB55AB-C21A-4637-BB3F-A12568109D35} - Recommended state: 1
+# LGPO: Computer Configuration\Administrative Templates\Windows Components\Microsoft Defender Exploit Guard\Attack surface reduction
+HKLM\SOFTWARE\Microsoft\Windows Defender\Windows Defender Exploit Guard\ASR\Rules|{C1DB55AB-C21A-4637-BB3F-A12568109D35}|REG_DWORD|1
+
+# ASR Rule {9E6B2F53-2DD2-4C30-AD2A-4C2F303E9C94} - Recommended state: 1
+# LGPO: Computer Configuration\Administrative Templates\Windows Components\Microsoft Defender Exploit Guard\Attack surface reduction
+HKLM\SOFTWARE\Microsoft\Windows Defender\Windows Defender Exploit Guard\ASR\Rules|{9E6B2F53-2DD2-4C30-AD2A-4C2F303E9C94}|REG_DWORD|1
+
+# ASR Rule {3E37E320-7B74-44A2-879F-3EC29E8C83D8} - Recommended state: 1
+# LGPO: Computer Configuration\Administrative Templates\Windows Components\Microsoft Defender Exploit Guard\Attack surface reduction
+HKLM\SOFTWARE\Microsoft\Windows Defender\Windows Defender Exploit Guard\ASR\Rules|{3E37E320-7B74-44A2-879F-3EC29E8C83D8}|REG_DWORD|1
+
+# ASR Rule {D1E49AAC-8F56-4280-B9BA-993A6D77406C} - Recommended state: 2
+# LGPO: Computer Configuration\Administrative Templates\Windows Components\Microsoft Defender Exploit Guard\Attack surface reduction
+HKLM\SOFTWARE\Microsoft\Windows Defender\Windows Defender Exploit Guard\ASR\Rules|{D1E49AAC-8F56-4280-B9BA-993A6D77406C}|REG_DWORD|2
+
+# ASR Rule {26190899-1602-49E8-8B27-EB1D0A1CE869} - Recommended state: 2
+# LGPO: Computer Configuration\Administrative Templates\Windows Components\Microsoft Defender Exploit Guard\Attack surface reduction
+HKLM\SOFTWARE\Microsoft\Windows Defender\Windows Defender Exploit Guard\ASR\Rules|{26190899-1602-49E8-8B27-EB1D0A1CE869}|REG_DWORD|2
+
+# ASR Rule {BE9BA2D9-53EA-4CDC-84E5-9B1EEEE46550} - Recommended state: 2
+# LGPO: Computer Configuration\Administrative Templates\Windows Components\Microsoft Defender Exploit Guard\Attack surface reduction
+HKLM\SOFTWARE\Microsoft\Windows Defender\Windows Defender Exploit Guard\ASR\Rules|{BE9BA2D9-53EA-4CDC-84E5-9B1EEEE46550}|REG_DWORD|2
+
+# ASR Rule {F1E2B6F0-3CCB-4A0B-9F7B-5A9C7D1E1F1E} - Recommended state: 6
+# LGPO: Computer Configuration\Administrative Templates\Windows Components\Microsoft Defender Exploit Guard\Attack surface reduction
+HKLM\SOFTWARE\Microsoft\Windows Defender\Windows Defender Exploit Guard\ASR\Rules|{F1E2B6F0-3CCB-4A0B-9F7B-5A9C7D1E1F1E}|REG_DWORD|6
+
+# Disable IPv6 (legacy baseline recommendation)
+# LGPO: Computer Configuration\Administrative Templates\Network\TCPIP Settings\IPv6 Transition Technologies\Set Teredo State
+HKLM\SYSTEM\CurrentControlSet\Services\Tcpip6\Parameters|DisabledComponents|REG_DWORD|255
+
+# Disable NetBIOS over TCP/IP
+# LGPO: Computer Configuration\Administrative Templates\Network\NetBIOS over TCP/IP\Disable NetBIOS
+HKLM\SYSTEM\CurrentControlSet\Services\NetBT\Parameters|EnableLMHOSTS|REG_DWORD|0
+
+# Disable LLMNR
+# LGPO: Computer Configuration\Administrative Templates\Network\DNS Client\Turn off multicast name resolution
+HKLM\SOFTWARE\Policies\Microsoft\Windows NT\DNSClient|EnableMulticast|REG_DWORD|0
+
+# Disable WPAD
+# LGPO: Computer Configuration\Administrative Templates\System\Internet Communication Management\Internet Communication settings\Disable automatic detection of proxy settings
+HKLM\SOFTWARE\Policies\Microsoft\Windows\CurrentVersion\Internet Settings|EnableAutoProxyResultCache|REG_DWORD|0
+
+# Disable SMBv1 server
+# LGPO: Computer Configuration\Administrative Templates\Network\SMBv1\SMBv1 Server Configuration
+HKLM\SYSTEM\CurrentControlSet\Services\LanmanServer\Parameters|SMB1|REG_DWORD|0
