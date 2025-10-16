@@ -2,6 +2,72 @@
 # Format: Hive\Path|ValueName|Type|Data
 # Each setting is annotated with its ADMX/Group Policy name and LGPO path.
 
+
+# -------------------------
+# Google Chrome (User-level)
+# -------------------------
+
+# Allow extensions only from Chrome Web Store (Manifest V2 only)
+# LGPO: User Configuration\Administrative Templates\Google\Google Chrome\Extensions\Configure extension installation whitelist
+HKCU\Software\Policies\Google\Chrome\ExtensionInstallAllowlist|1|REG_SZ|*
+
+# Enable password manager
+# LGPO: User Configuration\Administrative Templates\Google\Google Chrome\Password manager enabled
+HKCU\Software\Policies\Google\Chrome|PasswordManagerEnabled|REG_DWORD|1
+
+# Disable Developer Tools
+# LGPO: User Configuration\Administrative Templates\Google\Google Chrome\Developer Tools availability
+HKCU\Software\Policies\Google\Chrome|DeveloperToolsAvailability|REG_DWORD|2
+
+# Enable Safe Browsing
+# LGPO: User Configuration\Administrative Templates\Google\Google Chrome\Enable Safe Browsing
+HKCU\Software\Policies\Google\Chrome|SafeBrowsingEnabled|REG_DWORD|1
+
+
+# -------------------------
+# Microsoft Edge (User-level)
+# -------------------------
+
+# Allow extensions only from Microsoft Store (Manifest V2 only)
+# LGPO: User Configuration\Administrative Templates\Microsoft Edge\Control where extensions are installed from
+HKCU\Software\Policies\Microsoft\Edge|ExtensionInstallSources|REG_SZ|https://microsoftedge.microsoft.com/addons
+
+# Enable password manager
+# LGPO: User Configuration\Administrative Templates\Microsoft Edge\Enable saving passwords to the password manager
+HKCU\Software\Policies\Microsoft\Edge|PasswordManagerEnabled|REG_DWORD|1
+
+# Disable Developer Tools
+# LGPO: User Configuration\Administrative Templates\Microsoft Edge\Control whether Developer Tools can be used
+HKCU\Software\Policies\Microsoft\Edge|DeveloperToolsAvailability|REG_DWORD|2
+
+# Enable SmartScreen
+# LGPO: User Configuration\Administrative Templates\Microsoft Edge\Configure Microsoft Defender SmartScreen
+HKCU\Software\Policies\Microsoft\Edge|SmartScreenEnabled|REG_DWORD|1
+
+
+# -------------------------
+# Mozilla Firefox (User-level)
+# -------------------------
+
+# Allow extensions only from Mozilla Add-ons site (Manifest V2 only)
+# LGPO: User Configuration\Administrative Templates\Mozilla\Firefox\Extension settings
+HKCU\Software\Policies\Mozilla\Firefox\ExtensionSettings|InstallSources|REG_SZ|https://addons.mozilla.org
+
+# Enable password manager
+# LGPO: User Configuration\Administrative Templates\Mozilla\Firefox\Enable password manager
+HKCU\Software\Policies\Mozilla\Firefox|PasswordManagerEnabled|REG_DWORD|1
+
+# Disable Developer Tools
+# LGPO: User Configuration\Administrative Templates\Mozilla\Firefox\Disable Developer Tools
+HKCU\Software\Policies\Mozilla\Firefox|DisableDeveloperTools|REG_DWORD|1
+
+# Enable phishing and malware protection
+# LGPO: User Configuration\Administrative Templates\Mozilla\Firefox\Enable phishing and malware protection
+HKCU\Software\Policies\Mozilla\Firefox|SafeBrowsingEnabled|REG_DWORD|1
+
+
+
+
 # Chrome: Allow extensions only from Chrome Web Store (Manifest V2 only)
 # LGPO: User Configuration\Administrative Templates\Google\Google Chrome\Extensions\Configure extension installation whitelist
 HKCU\\Software\\Policies\\Google\\Chrome\\ExtensionInstallAllowlist|1|REG_SZ|*
